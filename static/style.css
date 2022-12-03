@@ -1,0 +1,25 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-image: url("20828773342_c6f4a50a90_k2.webp");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.text-purple {
+    color: #BC35AB
+}
+
+.pigeon-icon {
+    background: url('pigeon.png');
+    height: 64px;
+    width: 64px;
+    display: block;
+    /* Other styles here */
+}

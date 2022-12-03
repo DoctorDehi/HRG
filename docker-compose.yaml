@@ -1,0 +1,7 @@
+  neo4j:
+      image: neo4j:latest
+      env_file:
+        - '.env'
+      ports:
+        - '7476:7474'
+        - '7689:7687'
