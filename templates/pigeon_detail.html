@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% set active_page = 'pigeon_detail' %}
+
+{% block content %}
+    <h1>Detail holuba {{ data["cislo_krouzku"] }}/{{ data["rocnik"] }}</h1>
+
+    {% for i in data.keys() %}
+        <p>{{ i }}: {{ data[i] }}</p>
+    {% endfor %}
+{% endblock %}

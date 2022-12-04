@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% set active_page = 'my_pigeons' %}
+
+{% block content %}
+    <h1>Moji holubi</h1>
+    <ul>
+    {% for record in data %}
+        <li><a href="{{ url_for("pigeon_detail", pigeonID=record["pigeon"]["id"]) }}">{{ record["pigeon"]["cislo_krouzku"] }}/{{ record["pigeon"]["rocnik"] }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

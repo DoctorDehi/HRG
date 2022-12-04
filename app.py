@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, g
 from neo4j import GraphDatabase, basic_auth
+from neo4j.exceptions import Neo4jError
+import json
 
 app = Flask(__name__)
 
@@ -18,7 +20,9 @@ def index():
 
 @app.route('/add-pigeon', methods=['GET', 'POST'])
 def add_pigeon():
-    if request.method == "POST":
+    if request.method == "GET":
+        return render_template("add_pigeon.html")
+    else:
         cislo_krouzku_full = request.form.get("cislo_krouzku", "")
         if not cislo_krouzku_full:
             return render_template("add_pigeon.html", add_pigeon_success=False, error="Nebylo zadáno číslo kroužku! Data nebyla uložena")
@@ -44,13 +48,10 @@ def add_pigeon():
         try:
             db = get_db()
             db.run("CREATE (p:Pigeon $data )", data=holub_data)
-        except SyntaxError:
+        except Neo4jError:
             return render_template("add_pigeon.html", add_pigeon_success=False, error="Data nebyla uložena.")
 
-
         return  render_template("add_pigeon.html", add_pigeon_success=True)
-    else:
-        return  render_template("add_pigeon.html")
 
 
 @app.route('/edit-pigeon')
@@ -58,10 +59,25 @@ def edit_pigeon():
     ...
 
 
-@app.route('/pigeon-detail')
-def pigeon_detail():
-    ...
+@app.route('/pigeon-detail/<pigeonID>')
+def pigeon_detail(pigeonID):
+    db= get_db()
+    q = "MATCH (a:Pigeon) "\
+        "WHERE a.id = $id "\
+        "RETURN a AS pigeon"
+    result = db.run(q, id=pigeonID)
+    data = result.data()[0]["pigeon"]
+    return render_template("pigeon_detail.html", data=data)
 
+
+@app.route("/my-pigeons")
+def my_pigeons():
+    db = get_db()
+    q = "MATCH (a:Pigeon) " \
+        "RETURN a AS pigeon"
+    result = db.run(q)
+    data = result.data()
+    return render_template("pigeon_list.html", data=data)
 
 @app.route('/pigeon-pedigree')
 def pigeon_pedigree():

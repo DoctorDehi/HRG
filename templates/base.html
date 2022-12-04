@@ -31,7 +31,7 @@
                 Holubi
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#">Seznam holubů</a></li>
+                <li><a class="dropdown-item{% if active_page == 'my_pigeons' %} active{% endif %}" href="{{ url_for("my_pigeons") }}">Seznam holubů</a></li>
                 <li><a class="dropdown-item{% if active_page == 'add_pigeon' %} active{% endif %}" href="{{ url_for("add_pigeon") }}">Přidat holuba</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="#">Rodokmeny</a></li>
