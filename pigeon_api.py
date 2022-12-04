@@ -3,6 +3,7 @@ from neo4j import GraphDatabase, basic_auth
 from app import app
 from flask import g, request, jsonify
 
+
 driver = GraphDatabase.driver("bolt://127.0.0.1:7689", auth=basic_auth("neo4j", "knock-cape-reserve"))
 
 
@@ -24,12 +25,12 @@ def teardown_db(exception):
 def query_pigeons():
     id = request.args.get('id')
     db = get_db()
-    result = db.run("MATCH (a:Pigeon)"
-                    "WHERE a.id = $id "
-                    "RETURN a AS pigeons", id=id)
-    for record in result:
-        return jsonify(record.data())
-    return jsonify({'error': 'data not found'})
+    q = "MATCH (a:Pigeon) "
+    if id:
+        q = q + "WHERE a.id = $id "
+    q = q + "RETURN a AS pigeon"
+    result = db.run(q, id=id)
+    return jsonify(result.data())
 
 
 @app.route('/api/pigeon', methods=['PUT'])

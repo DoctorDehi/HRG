@@ -8,7 +8,6 @@ body {
     background-image: url("20828773342_c6f4a50a90_k2.webp");
     height: 100%;
     background-position: center;
-    background-repeat: no-repeat;
     background-size: cover;
 }
 
@@ -22,4 +21,17 @@ body {
     width: 64px;
     display: block;
     /* Other styles here */
+}
+
+.add-pigeon-form__cislo-krouzku {
+    max-width: 70%;
+}
+
+.add-pigeon-form__rocnik {
+    width: 20%;
+    max-width: 100px;
+}
+
+add-pigeon-form__legend {
+    font-size: 1rem;
 }
