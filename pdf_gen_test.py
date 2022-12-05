@@ -28,8 +28,8 @@ coords = {
     "otec_chovatel": (496, 95),
     "otec_bydliste": (459, 74),
 
-    "pm2_1_cislo_krouzku": (),
-    "pm2_2_cislo_krouzku": (),
+    "pm2_1_cislo_krouzku": (357, 358),
+    "pm2_2_cislo_krouzku": (479, 358),
     # vertical
     "pm3_1_cislo_krouzku": (215, -354),
     "pm3_2_cislo_krouzku": (215, -414),
@@ -44,13 +44,13 @@ coords = {
     "pm4_7_cislo_krouzku": (90, -525),
     "pm4_8_cislo_krouzku": (90, -555),
 
-    "pm2_1_chovatel": (),
-    "pm2_2_chovatel": (),
+    "pm2_1_chovatel": (372, 342),
+    "pm2_2_chovatel": (494, 342),
     # vertical
-    "pm3_1_chovatel": (),
-    "pm3_2_chovatel": (),
-    "pm3_3_chovatel": (),
-    "pm3_4_chovatel": (),
+    "pm3_1_chovatel": (233, -372),
+    "pm3_2_chovatel": (233, -432),
+    "pm3_3_chovatel": (233, -491),
+    "pm3_4_chovatel": (233, -551),
     "pm4_1_chovatel": (105, -360),
     "pm4_2_chovatel": (105, -390),
     "pm4_3_chovatel": (105, -420),
@@ -60,16 +60,16 @@ coords = {
     "pm4_7_chovatel": (105, -539),
     "pm4_8_chovatel": (105, -569),
 
-    "pm2_1_bydliste": (),
-    "pm2_2_bydliste": (),
+    "pm2_1_bydliste": (339, 326),
+    "pm2_2_bydliste": (461, 326),
     # vertical
-    "pm3_1_bydliste": (),
-    "pm3_2_bydliste": (),
-    "pm3_3_bydliste": (),
-    "pm3_4_bydliste": (),
+    "pm3_1_bydliste": (200, -390),
+    "pm3_2_bydliste": (200, -450),
+    "pm3_3_bydliste": (200, -509),
+    "pm3_4_bydliste": (200, -569),
 
-    "po2_1_cislo_krouzku": (),
-    "po2_2_cislo_krouzku": (),
+    "po2_1_cislo_krouzku": (68, 358),
+    "po2_2_cislo_krouzku": (190, 358),
     # vertical
     "po3_1_cislo_krouzku": (215, -65),
     "po3_2_cislo_krouzku": (215, -125),
@@ -84,13 +84,13 @@ coords = {
     "po4_7_cislo_krouzku": (90, -236),
     "po4_8_cislo_krouzku": (90, -266),
 
-    "po2_1_chovatel": (),
-    "po2_2_chovatel": (),
+    "po2_1_chovatel": (83, 342),
+    "po2_2_chovatel": (205, 342),
     # vertical
-    "po3_1_chovatel": (),
-    "po3_2_chovatel": (),
-    "po3_3_chovatel": (),
-    "po3_4_chovatel": (),
+    "po3_1_chovatel": (233, -83),
+    "po3_2_chovatel": (233, -143),
+    "po3_3_chovatel": (233, -202),
+    "po3_4_chovatel": (233, -262),
     "po4_1_chovatel": (105, -71),
     "po4_2_chovatel": (105, -101),
     "po4_3_chovatel": (105, -131),
@@ -100,13 +100,13 @@ coords = {
     "po4_7_chovatel": (105, -250),
     "po4_8_chovatel": (105, -280),
 
-    "po2_1_bydliste": (),
-    "po2_2_bydliste": (),
+    "po2_1_bydliste": (50, 326),
+    "po2_2_bydliste": (172, 326),
     # vetical
-    "po3_1_bydliste": (),
-    "po3_2_bydliste": (),
-    "po3_3_bydliste": (),
-    "po3_4_bydliste": (),
+    "po3_1_bydliste": (200, -101),
+    "po3_2_bydliste": (200, -161),
+    "po3_3_bydliste": (200, -220),
+    "po3_4_bydliste": (200, -280),
 
 }
 
@@ -126,6 +126,25 @@ def gen_test():
     can = canvas.Canvas(packet1, pagesize=letter)
     can.setFont("Calibri", 10)
 
+    can.drawString(68, 358, "RS453/19")
+    can.drawString(190, 358, "F354/18")
+
+    can.drawString(357, 358, "F354/18")
+    can.drawString(479, 358, "F354/18")
+
+    can.setFont("Calibri", 8)
+    can.drawString(83, 342, "Denisa Krebsová asdfrtg")
+    can.drawString(205, 342, "Denisa Krebsová")
+
+    can.drawString(372, 342, "Denisa Krebsová")
+    can.drawString(494, 342, "Denisa Krebsová")
+
+    can.drawString(50, 326, "Libochovany 45, 41103")
+    can.drawString(172, 326, "Libochovany 45, 41103")
+
+    can.drawString(339, 326, "Libochovany 45, 41103")
+    can.drawString(461, 326, "Libochovany 45, 41103")
+
     can.rotate(90)
     can.drawString(215, -65, "R453/16")
     can.drawString(215, -125, "R453/16")
@@ -142,6 +161,22 @@ def gen_test():
     can.drawString(233, -143, "Denisa Zátopková")
     can.drawString(233, -202, "Michail Novotný")
     can.drawString(233, -262, "Michail Novotný")
+
+    can.drawString(233, -372, "Michail Novotný")
+    can.drawString(233, -432, "Michail Novotný")
+    can.drawString(233, -491, "Michail Novotný")
+    can.drawString(233, -551, "Michail Novotný")
+
+
+    can.drawString(200, -101, "Kolského 2045, Ústí nad Labem 41234")
+    can.drawString(200, -161, "Praha 6")
+    can.drawString(200, -220, "Litoměřice 245, 41103")
+    can.drawString(200, -280, "Litoměřice 245, 41103")
+
+    can.drawString(200, -390, "Litoměřice 245, 41103")
+    can.drawString(200, -450, "Litoměřice 245, 41103")
+    can.drawString(200, -509, "Litoměřice 245, 41103")
+    can.drawString(200, -569, "Litoměřice 245, 41103")
 
     can.drawString(90, -57, "U5831/13")
     can.drawString(90, -87, "U5432/13")
@@ -185,7 +220,7 @@ def gen_test():
 
     can = canvas.Canvas(packet0, pagesize=letter)
 
-    can.setFont("Calibri", 12)
+    can.setFont("Calibri", 10)
     can.line(365, 280, 400, 280)
     can.drawString(455, 284, "AT520/20")
     can.drawString(380, 258, "Český stavák")
@@ -227,8 +262,8 @@ def gen_test():
     page1 = existing_pdf.getPage(1)
     page0.mergePage(new_pdf0.getPage(0))
     page1.mergePage(new_pdf1.getPage(0))
-    output.addPage(page1)
     output.addPage(page0)
+    output.addPage(page1)
 
     # finally, write "output" to a real file
     outputStream = open("destination.pdf", "wb")

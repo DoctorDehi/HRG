@@ -107,5 +107,3 @@ def test():
     tmp.seek(0)
     return send_file(tmp, download_name="rodokmen.pdf")
 
-if __name__ == '__main__':
-    app.run()

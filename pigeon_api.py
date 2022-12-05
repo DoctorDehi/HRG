@@ -12,27 +12,28 @@ def get_db():
 
     return g.neo4j_db
 
+
 @pigeon_api.route('/api/pigeon', methods=['GET'])
 def query_pigeons():
-    id = request.args.get('id')
+    pg_id = request.args.get('id')
     db = get_db()
     q = "MATCH (a:Pigeon) "
-    if id:
+    if pg_id:
         q = q + "WHERE a.id = $id "
     q = q + "RETURN a AS pigeon"
-    result = db.run(q, id=id)
+    result = db.run(q, id=pg_id)
     return jsonify(result.data())
 
 
 @pigeon_api.route('/api/pigeon', methods=['PUT'])
 def create_pigeon():
     pigeon = json.loads(request.data)
-    id = str(pigeon["cislo_krouzku"]) + "-" + str(pigeon["rocnik"])
+    pg_id = str(pigeon["cislo_krouzku"]) + "-" + str(pigeon["rocnik"])
     db = get_db()
     db.run("CREATE (p:Pigeon {  id: $id,"
                                 "cislo_krouzku: $cislo_krouzku,"
                                 "rocnik: $rocnik"
-           "}) ", id=id, cislo_krouzku=pigeon["cislo_krouzku"], rocnik=pigeon["rocnik"])
+           "}) ", id=pg_id, cislo_krouzku=pigeon["cislo_krouzku"], rocnik=pigeon["rocnik"])
 
     return jsonify(pigeon)
 
