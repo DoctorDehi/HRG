@@ -1,9 +1,8 @@
 import json
 from neo4j import GraphDatabase, basic_auth
-from app import app
-from flask import g, request, jsonify
+from flask import Blueprint, g, request, jsonify
 
-
+pigeon_api = Blueprint('app', __name__)
 driver = GraphDatabase.driver("bolt://127.0.0.1:7689", auth=basic_auth("neo4j", "knock-cape-reserve"))
 
 
@@ -13,15 +12,7 @@ def get_db():
 
     return g.neo4j_db
 
-@app.teardown_appcontext
-def teardown_db(exception):
-    neo4j_db = g.pop('neo4j_db', None)
-
-    if neo4j_db is not None:
-        neo4j_db.close()
-
-
-@app.route('/api/pigeon', methods=['GET'])
+@pigeon_api.route('/api/pigeon', methods=['GET'])
 def query_pigeons():
     id = request.args.get('id')
     db = get_db()
@@ -33,7 +24,7 @@ def query_pigeons():
     return jsonify(result.data())
 
 
-@app.route('/api/pigeon', methods=['PUT'])
+@pigeon_api.route('/api/pigeon', methods=['PUT'])
 def create_pigeon():
     pigeon = json.loads(request.data)
     id = str(pigeon["cislo_krouzku"]) + "-" + str(pigeon["rocnik"])
@@ -46,7 +37,7 @@ def create_pigeon():
     return jsonify(pigeon)
 
 
-@app.route('/api/pigeon', methods=['POST'])
+@pigeon_api.route('/api/pigeon', methods=['POST'])
 def update_pigeon():
     pigeon = json.loads(request.data)
     if pigeon.get("id"):
@@ -62,7 +53,7 @@ def update_pigeon():
     return jsonify(pigeon)
 
 
-@app.route('/api/pigeon', methods=['DELETE'])
+@pigeon_api.route('/api/pigeon', methods=['DELETE'])
 def delete_pigeon():
     pigeon = json.loads(request.data)
     if pigeon.get("id"):

@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request, g, send_file
+from flask import Blueprint, render_template, request, g, send_file
 from neo4j import GraphDatabase, basic_auth
 from neo4j.exceptions import Neo4jError
 import tempfile
 
-app = Flask(__name__)
+app = Blueprint('pigeon_app', __name__, template_folder='templates')
 
 driver = GraphDatabase.driver("bolt://127.0.0.1:7689", auth=basic_auth("neo4j", "knock-cape-reserve"))
 
@@ -12,6 +12,7 @@ def get_db():
         g.neo4j_db = driver.session()
 
     return g.neo4j_db
+
 
 @app.route('/')
 def index():

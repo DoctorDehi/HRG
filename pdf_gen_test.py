@@ -30,10 +30,11 @@ coords = {
 
     "pm2_1_cislo_krouzku": (),
     "pm2_2_cislo_krouzku": (),
-    "pm3_1_cislo_krouzku": (),
-    "pm3_2_cislo_krouzku": (),
-    "pm3_3_cislo_krouzku": (),
-    "pm3_4_cislo_krouzku": (),
+    # vertical
+    "pm3_1_cislo_krouzku": (215, -354),
+    "pm3_2_cislo_krouzku": (215, -414),
+    "pm3_3_cislo_krouzku": (215, -473),
+    "pm3_4_cislo_krouzku": (215, -533),
     "pm4_1_cislo_krouzku": (90, -346),
     "pm4_2_cislo_krouzku": (90, -376),
     "pm4_3_cislo_krouzku": (90, -406),
@@ -42,6 +43,7 @@ coords = {
     "pm4_6_cislo_krouzku": (90, -495),
     "pm4_7_cislo_krouzku": (90, -525),
     "pm4_8_cislo_krouzku": (90, -555),
+
     "pm2_1_chovatel": (),
     "pm2_2_chovatel": (),
     # vertical
@@ -60,6 +62,7 @@ coords = {
 
     "pm2_1_bydliste": (),
     "pm2_2_bydliste": (),
+    # vertical
     "pm3_1_bydliste": (),
     "pm3_2_bydliste": (),
     "pm3_3_bydliste": (),
@@ -67,10 +70,11 @@ coords = {
 
     "po2_1_cislo_krouzku": (),
     "po2_2_cislo_krouzku": (),
-    "po3_1_cislo_krouzku": (),
-    "po3_2_cislo_krouzku": (),
-    "po3_3_cislo_krouzku": (),
-    "po3_4_cislo_krouzku": (),
+    # vertical
+    "po3_1_cislo_krouzku": (215, -65),
+    "po3_2_cislo_krouzku": (215, -125),
+    "po3_3_cislo_krouzku": (215, -184),
+    "po3_4_cislo_krouzku": (215, -244),
     "po4_1_cislo_krouzku": (90, -57),
     "po4_2_cislo_krouzku": (90, -87),
     "po4_3_cislo_krouzku": (90, -117),
@@ -79,6 +83,7 @@ coords = {
     "po4_6_cislo_krouzku": (90, -206),
     "po4_7_cislo_krouzku": (90, -236),
     "po4_8_cislo_krouzku": (90, -266),
+
     "po2_1_chovatel": (),
     "po2_2_chovatel": (),
     # vertical
@@ -97,12 +102,21 @@ coords = {
 
     "po2_1_bydliste": (),
     "po2_2_bydliste": (),
+    # vetical
     "po3_1_bydliste": (),
     "po3_2_bydliste": (),
     "po3_3_bydliste": (),
     "po3_4_bydliste": (),
 
 }
+
+"""
+po_3_* -> vertical
+po_4_* -> vertical
+pm_3_* -> vertical
+pm_4_* -> vertical
+"""
+
 def gen_test():
     pdfmetrics.registerFont(TTFont('Calibri', './Carlito-Regular.ttf'))
 
@@ -112,10 +126,23 @@ def gen_test():
     can = canvas.Canvas(packet1, pagesize=letter)
     can.setFont("Calibri", 10)
 
-
-
-
     can.rotate(90)
+    can.drawString(215, -65, "R453/16")
+    can.drawString(215, -125, "R453/16")
+    can.drawString(215, -184, "R453/16")
+    can.drawString(215, -244, "R453/16")
+
+    can.drawString(215, -354, "R453/16")
+    can.drawString(215, -414, "R453/16")
+    can.drawString(215, -473, "R453/16")
+    can.drawString(215, -533, "R453/16")
+
+    can.setFont("Calibri", 8)
+    can.drawString(233, -83, "Barbora Špotáková")
+    can.drawString(233, -143, "Denisa Zátopková")
+    can.drawString(233, -202, "Michail Novotný")
+    can.drawString(233, -262, "Michail Novotný")
+
     can.drawString(90, -57, "U5831/13")
     can.drawString(90, -87, "U5432/13")
     can.drawString(90, -117, "U5433/13")
@@ -200,8 +227,9 @@ def gen_test():
     page1 = existing_pdf.getPage(1)
     page0.mergePage(new_pdf0.getPage(0))
     page1.mergePage(new_pdf1.getPage(0))
-    output.addPage(page0)
     output.addPage(page1)
+    output.addPage(page0)
+
     # finally, write "output" to a real file
     outputStream = open("destination.pdf", "wb")
     output.write(outputStream)

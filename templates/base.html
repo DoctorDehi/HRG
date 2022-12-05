@@ -21,7 +21,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link{% if active_page == 'index' %} active{% endif %}" aria-current="page" href="{{ url_for("index") }}">Domů</a>
+              <a class="nav-link{% if active_page == 'index' %} active{% endif %}" aria-current="page" href="{{ url_for("pigeon_app.index") }}">Domů</a>
             </li>
             <li class="nav-item">
               <a class="nav-link " href="#">Link</a>
@@ -31,8 +31,8 @@
                 Holubi
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item{% if active_page == 'my_pigeons' %} active{% endif %}" href="{{ url_for("my_pigeons") }}">Seznam holubů</a></li>
-                <li><a class="dropdown-item{% if active_page == 'add_pigeon' %} active{% endif %}" href="{{ url_for("add_pigeon") }}">Přidat holuba</a></li>
+                <li><a class="dropdown-item{% if active_page == 'my_pigeons' %} active{% endif %}" href="{{ url_for("pigeon_app.my_pigeons") }}">Seznam holubů</a></li>
+                <li><a class="dropdown-item{% if active_page == 'add_pigeon' %} active{% endif %}" href="{{ url_for("pigeon_app.add_pigeon") }}">Přidat holuba</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="#">Rodokmeny</a></li>
               </ul>
