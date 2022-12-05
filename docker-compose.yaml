@@ -7,3 +7,8 @@ services:
       ports:
         - '7476:7474'
         - '7689:7687'
+      volumes:
+        - 'HRGdb:/data'
+
+volumes:
+  'HRGdb':
