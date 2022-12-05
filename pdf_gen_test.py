@@ -26,7 +26,77 @@ coords = {
     "otec_chovatel": (496, 95),
     "otec_bydliste": (459, 74),
 
+    "pm2_1_cislo_krouzku": (),
+    "pm2_2_cislo_krouzku": (),
+    "pm3_1_cislo_krouzku": (),
+    "pm3_2_cislo_krouzku": (),
+    "pm3_3_cislo_krouzku": (),
+    "pm3_4_cislo_krouzku": (),
+    "pm4_1_cislo_krouzku": (),
+    "pm4_2_cislo_krouzku": (),
+    "pm4_3_cislo_krouzku": (),
+    "pm4_4_cislo_krouzku": (),
+    "pm4_5_cislo_krouzku": (),
+    "pm4_6_cislo_krouzku": (),
+    "pm4_7_cislo_krouzku": (),
+    "pm4_8_cislo_krouzku": (),
+    "pm2_1_chovatel": (),
+    "pm2_2_chovatel": (),
+    # vertical
+    "pm3_1_chovatel": (),
+    "pm3_2_chovatel": (),
+    "pm3_3_chovatel": (),
+    "pm3_4_chovatel": (),
+    "pm4_1_chovatel": (),
+    "pm4_2_chovatel": (),
+    "pm4_3_chovatel": (),
+    "pm4_4_chovatel": (),
+    "pm4_5_chovatel": (),
+    "pm4_6_chovatel": (),
+    "pm4_7_chovatel": (),
+    "pm4_8_chovatel": (),
+    "pm2_1_bydliste": (),
+    "pm2_2_bydliste": (),
+    "pm3_1_bydliste": (),
+    "pm3_2_bydliste": (),
+    "pm3_3_bydliste": (),
+    "pm3_4_bydliste": (),
 
+    "po2_1_cislo_krouzku": (),
+    "po2_2_cislo_krouzku": (),
+    "po3_1_cislo_krouzku": (),
+    "po3_2_cislo_krouzku": (),
+    "po3_3_cislo_krouzku": (),
+    "po3_4_cislo_krouzku": (),
+    "po4_1_cislo_krouzku": (90, -57),
+    "po4_2_cislo_krouzku": (90, -87),
+    "po4_3_cislo_krouzku": (90, -117),
+    "po4_4_cislo_krouzku": (90, -147),
+    "po4_5_cislo_krouzku": (),
+    "po4_6_cislo_krouzku": (),
+    "po4_7_cislo_krouzku": (),
+    "po4_8_cislo_krouzku": (),
+    "po2_1_chovatel": (),
+    "po2_2_chovatel": (),
+    # vertical
+    "po3_1_chovatel": (),
+    "po3_2_chovatel": (),
+    "po3_3_chovatel": (),
+    "po3_4_chovatel": (),
+    "po4_1_chovatel": (105, -71),
+    "po4_2_chovatel": (105, -101),
+    "po4_3_chovatel": (105, -131),
+    "po4_4_chovatel": (105, -161),
+    "po4_5_chovatel": (),
+    "po4_6_chovatel": (),
+    "po4_7_chovatel": (),
+    "po4_8_chovatel": (),
+    "po2_1_bydliste": (),
+    "po2_2_bydliste": (),
+    "po3_1_bydliste": (),
+    "po3_2_bydliste": (),
+    "po3_3_bydliste": (),
+    "po3_4_bydliste": (),
 
 }
 pdfmetrics.registerFont(TTFont('Calibri', './Carlito-Regular.ttf'))
@@ -37,15 +107,15 @@ packet1 = io.BytesIO()
 can = canvas.Canvas(packet1, pagesize=letter)
 can.setFont("Calibri", 10)
 can.rotate(90)
-can.drawString(90, -57, "U543/13")
+can.drawString(90, -57, "U5831/13")
 can.drawString(105, -71, "Denisa Krebsová")
-can.drawString(90, -87, "U543/13")
+can.drawString(90, -87, "U5432/13")
 can.drawString(105, -101, "Denisa Krebsová")
-can.drawString(90, -117, "U543/13")
+can.drawString(90, -117, "U5433/13")
 can.drawString(105, -131, "Denisa Krebsová")
-can.drawString(90, -147, "U543/13")
+can.drawString(90, -147, "U5434/13")
 can.drawString(105, -161, "Denisa Krebsová")
-can.drawString(90, -176, "U543/13")
+can.drawString(90, -176, "U5435/13")
 can.drawString(105, -191, "Denisa Krebsová")
 can.drawString(90, -206, "U543/13")
 can.drawString(105, -221, "Denisa Krebsová")
