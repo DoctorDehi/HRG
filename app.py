@@ -30,8 +30,12 @@ def add_pigeon():
 
         cislo_krouzku, rocnik = cislo_krouzku_full.split("/")
 
+        holub_id = str(cislo_krouzku) + "-" + str(rocnik)
+
+        # zkountrolovat zda holub id není v db
+
         holub_data = {
-            "id" : str(cislo_krouzku) + "-" + str(rocnik),
+            "id" : holub_id,
             "cislo_krouzku": cislo_krouzku,
             "rocnik": rocnik,
             "pohlavi": request.form.get("pohlavi", ""),
@@ -61,9 +65,25 @@ def add_pigeon():
         return  render_template("add_pigeon.html", add_pigeon_success=True)
 
 
-@app.route('/edit-pigeon')
-def edit_pigeon():
-    ...
+@app.route('/edit-pigeon/<pigeonID>', methods=['GET', 'POST'])
+def edit_pigeon(pigeonID):
+    if request.method == "POST":
+        # pokud se změní pohlaví, rozvázat vztah s případnými potomky
+        # pokud se změní matka či otec, rozvázat vztah s původním a přidat nový
+        return "Zatím neimplementováno, změny nebyly uloženy.."
+    else:
+        db = get_db()
+        q = "MATCH (a:Pigeon) " \
+            "WHERE a.id = $id " \
+            "RETURN a AS pigeon"
+        result = db.run(q, id=pigeonID)
+        data = result.data()[0]["pigeon"]
+        # pridat do dat krouzky matky a otce
+        return render_template("edit_pigeon.html", data=data)
+
+@app.route('/delete-pigeon/<pigeonID>')
+def delete_pigeon(pigeonID):
+    return "Zatím neimplementováno"
 
 
 @app.route('/pigeon-detail/<pigeonID>')
@@ -86,14 +106,17 @@ def my_pigeons():
     data = result.data()
     return render_template("pigeon_list.html", data=data)
 
-@app.route('/pigeon-pedigree')
-def pigeon_pedigree():
-    ...
+
+# noinspection PyPep8Naming
+@app.route('/pigeon-pedigree/<pigeonID>')
+def pigeon_pedigree(pigeonID):
+    return "Zatím neimplementováno"
 
 
 @app.route('/pigeon-pedigree-download')
 def pigeon_pedigree_download():
-    ...
+    # asi redirect
+    return "Zatím neimplementováno"
 
 @app.route('/test/rodokmen.pdf')
 def test():

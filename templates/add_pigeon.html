@@ -5,7 +5,7 @@
 {% block content %}
     <div class="container mt-5 bg-light p-5 border">
     {% if add_pigeon_success %}
-        <p class="text-success">Holub byl úspěšně přidán</p>
+        <p class="text-success">Holub byl úspěšně uložen</p>
     {% endif %}
     {% if error %}
         <p class="text-danger">Chyba: {{ error }}</p>
@@ -30,10 +30,10 @@
             <fieldset class="add-pigeon-form__pohlavi mt-2">
                 <legend class="add-pigeon-form__legend fs-6">Pohlaví: * </legend>
                 <label for="samec">
-                    <input class="ms-2 form-check-input" type="radio" name="pohlavi" value="samec" required checked> samec
+                    <input class="ms-2 form-check-input" type="radio" name="pohlavi" value="1.0" required checked> samec
                 </label>
                 <label for="samice">
-                    <input class="ms-2 form-check-input" type="radio" name="pohlavi" value="samice" required> samice
+                    <input class="ms-2 form-check-input" type="radio" name="pohlavi" value="0.1" required> samice
                 </label>
             </fieldset>
 
