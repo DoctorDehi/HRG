@@ -48,6 +48,12 @@ def add_pigeon():
         try:
             db = get_db()
             db.run("CREATE (p:Pigeon $data )", data=holub_data)
+
+            # check of matka
+            # check if otec
+            # check if matka in db
+            # if not matka in db -> create matka
+            # match holub, matka matka:Pigeon-[:MATKA]->holub:Pigeon
         except Neo4jError:
             return render_template("add_pigeon.html", add_pigeon_success=False, error="Data nebyla uložena.")
 
