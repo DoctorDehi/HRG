@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, g
+from flask import Flask, render_template, request, g, send_file
 from neo4j import GraphDatabase, basic_auth
 from neo4j.exceptions import Neo4jError
-import json
+import tempfile
 
 app = Flask(__name__)
 
@@ -94,6 +94,17 @@ def pigeon_pedigree():
 def pigeon_pedigree_download():
     ...
 
+@app.route('/test/rodokmen.pdf')
+def test():
+    tmp = tempfile.TemporaryFile()
+    # tmp.write(b'some content')
+    # tmp.seek(0)
+    import pdf_gen_test
+    output = pdf_gen_test.gen_test()
+    output.write_stream(tmp)
+    output.write(tmp)
+    tmp.seek(0)
+    return send_file(tmp, download_name="rodokmen.pdf")
 
 if __name__ == '__main__':
     app.run()
