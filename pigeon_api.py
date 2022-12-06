@@ -1,9 +1,9 @@
 import json
-from neo4j import GraphDatabase, basic_auth
 from flask import Blueprint, g, request, jsonify
+from db_conf import driver
+
 
 pigeon_api = Blueprint('app', __name__)
-driver = GraphDatabase.driver("bolt://127.0.0.1:7689", auth=basic_auth("neo4j", "knock-cape-reserve"))
 
 
 def get_db():

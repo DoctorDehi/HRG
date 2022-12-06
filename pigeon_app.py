@@ -1,11 +1,10 @@
-from flask import Blueprint, render_template, request, g, send_file
-from neo4j import GraphDatabase, basic_auth
+from flask import Blueprint, render_template, request, g, send_file, redirect, url_for
 from neo4j.exceptions import Neo4jError
+from db_conf import driver
 import tempfile
 
-app = Blueprint('pigeon_app', __name__, template_folder='templates')
+pigeon_app = Blueprint('pigeon_app', __name__, template_folder='templates')
 
-driver = GraphDatabase.driver("bolt://127.0.0.1:7689", auth=basic_auth("neo4j", "knock-cape-reserve"))
 
 def get_db():
     if 'db' not in g:
@@ -14,12 +13,12 @@ def get_db():
     return g.neo4j_db
 
 
-@app.route('/')
+@pigeon_app.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/add-pigeon', methods=['GET', 'POST'])
+@pigeon_app.route('/add-pigeon', methods=['GET', 'POST'])
 def add_pigeon():
     if request.method == "GET":
         return render_template("add_pigeon.html")
@@ -29,8 +28,9 @@ def add_pigeon():
             return render_template("add_pigeon.html", add_pigeon_success=False, error="Nebylo zadáno číslo kroužku! Data nebyla uložena")
 
         cislo_krouzku, rocnik = cislo_krouzku_full.split("/")
+        user_id = 1
 
-        holub_id = str(cislo_krouzku) + "-" + str(rocnik)
+        holub_id = str(user_id) + "-" + str(cislo_krouzku) + "-" + str(rocnik)
 
         # zkountrolovat zda holub id není v db
 
@@ -65,7 +65,7 @@ def add_pigeon():
         return  render_template("add_pigeon.html", add_pigeon_success=True)
 
 
-@app.route('/edit-pigeon/<pigeonID>', methods=['GET', 'POST'])
+@pigeon_app.route('/edit-pigeon/<pigeonID>', methods=['GET', 'POST'])
 def edit_pigeon(pigeonID):
     if request.method == "POST":
         # pokud se změní pohlaví, rozvázat vztah s případnými potomky
@@ -81,12 +81,17 @@ def edit_pigeon(pigeonID):
         # pridat do dat krouzky matky a otce
         return render_template("edit_pigeon.html", data=data)
 
-@app.route('/delete-pigeon/<pigeonID>')
+@pigeon_app.route('/delete-pigeon/<pigeonID>', methods=['GET', 'POST'])
 def delete_pigeon(pigeonID):
-    return "Zatím neimplementováno"
+    if request.method == "POST":
+        # mazání z db
+        return redirect(url_for("pigeon_app.my_pigeons"))
+    else:
+        krouzek = pigeonID.replace("-", "/")
+        return render_template("delete_pigeon.html", pigeon_krouzek=krouzek, pigeonID = pigeonID)
 
 
-@app.route('/pigeon-detail/<pigeonID>')
+@pigeon_app.route('/pigeon-detail/<pigeonID>')
 def pigeon_detail(pigeonID):
     db= get_db()
     q = "MATCH (a:Pigeon) "\
@@ -97,7 +102,7 @@ def pigeon_detail(pigeonID):
     return render_template("pigeon_detail.html", data=data)
 
 
-@app.route("/my-pigeons")
+@pigeon_app.route("/my-pigeons")
 def my_pigeons():
     db = get_db()
     q = "MATCH (a:Pigeon) " \
@@ -108,17 +113,17 @@ def my_pigeons():
 
 
 # noinspection PyPep8Naming
-@app.route('/pigeon-pedigree/<pigeonID>')
+@pigeon_app.route('/pigeon-pedigree/<pigeonID>')
 def pigeon_pedigree(pigeonID):
     return "Zatím neimplementováno"
 
 
-@app.route('/pigeon-pedigree-download')
+@pigeon_app.route('/pigeon-pedigree-download')
 def pigeon_pedigree_download():
     # asi redirect
     return "Zatím neimplementováno"
 
-@app.route('/test/rodokmen.pdf')
+@pigeon_app.route('/test/rodokmen.pdf')
 def test():
     tmp = tempfile.TemporaryFile()
     # tmp.write(b'some content')

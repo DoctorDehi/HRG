@@ -1,5 +1,6 @@
-from app import app as main_app
-from  pigeon_api import pigeon_api
+from pigeon_app import pigeon_app
+from pigeon_api import pigeon_api
+from login_app import login_app
 from flask import Flask, g
 
 
@@ -12,6 +13,7 @@ def teardown_db(exception):
     if neo4j_db is not None:
         neo4j_db.close()
 
-app.register_blueprint(main_app)
+app.register_blueprint(pigeon_app)
 app.register_blueprint(pigeon_api)
+app.register_blueprint(login_app)
 app.run(debug=True)
