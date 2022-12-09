@@ -20,6 +20,11 @@ def get_mongo_db():
 
 @login_app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        # check credentials
+        # if ok login
+        # else
+        return render_template('login_page.html', login_error="Nesprávné přihlašovací údaje")
     return render_template('login_page.html')
 
 @login_app.route('/logout')
