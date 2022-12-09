@@ -2,11 +2,11 @@ from pigeon_app import pigeon_app
 from pigeon_api import pigeon_api
 from login_app import login_app
 from flask import Flask, g
-from users import connect_user_db
+from db_conf import mongo_engine
 
-connect_user_db()
 
 app = Flask(__name__)
+mongo_engine.init_app(app)
 
 @app.teardown_appcontext
 def teardown_db(exception):
