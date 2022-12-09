@@ -2,7 +2,9 @@ from pigeon_app import pigeon_app
 from pigeon_api import pigeon_api
 from login_app import login_app
 from flask import Flask, g
+from users import connect_user_db
 
+connect_user_db()
 
 app = Flask(__name__)
 
