@@ -6,3 +6,6 @@
 - generování rodokmenů
 - výpočet inbreedingu
 - zobrazování rodinného stromu
+
+
+In development
