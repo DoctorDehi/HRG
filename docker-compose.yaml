@@ -10,5 +10,15 @@ services:
       volumes:
         - 'pigeondb:/data'
 
+  mongodb:
+    image: mongo:latest
+    env_file:
+      - '.env'
+    ports:
+      - "27019:27017"
+    volumes:
+      - 'mongodb:/data'
+
 volumes:
   'pigeondb':
+  'mongodb':
