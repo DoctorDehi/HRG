@@ -5,7 +5,7 @@ body, html {
 }
 
 body {
-    background-image: url("20828773342_c6f4a50a90_k2.webp");
+    background-image: url("../img/20828773342_c6f4a50a90_k2.webp");
     height: 100%;
     background-position: center;
     background-size: cover;
@@ -16,7 +16,7 @@ body {
 }
 
 .pigeon-icon {
-    background: url('pigeon.png');
+    background: url('../img/pigeon.png');
     height: 64px;
     width: 64px;
     display: block;

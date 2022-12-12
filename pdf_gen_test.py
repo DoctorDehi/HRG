@@ -118,7 +118,7 @@ pm_4_* -> vertical
 """
 
 def gen_test():
-    pdfmetrics.registerFont(TTFont('Calibri', './Carlito-Regular.ttf'))
+    pdfmetrics.registerFont(TTFont('Calibri', 'pdf_gen/Carlito-Regular.ttf'))
 
     packet0 = io.BytesIO()
     packet1 = io.BytesIO()
@@ -255,7 +255,7 @@ def gen_test():
     new_pdf0 = PdfFileReader(packet0)
     new_pdf1 = PdfFileReader(packet1)
     # read your existing PDF
-    existing_pdf = PdfFileReader(open("static/Rodokmen_holuba1.pdf", "rb"))
+    existing_pdf = PdfFileReader(open("pdf_gen/Rodokmen_holuba1.pdf", "rb"))
     output = PdfFileWriter()
     # add the "watermark" (which is the new pdf) on the existing page
     page0 = existing_pdf.getPage(0)
@@ -266,7 +266,7 @@ def gen_test():
     output.addPage(page1)
 
     # finally, write "output" to a real file
-    outputStream = open("destination.pdf", "wb")
+    outputStream = open("bordel/destination.pdf", "wb")
     output.write(outputStream)
     outputStream.close()
     return output

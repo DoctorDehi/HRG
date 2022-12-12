@@ -203,9 +203,9 @@ def my_pigeons():
 
 
 # noinspection PyPep8Naming
-@pigeon_app.route('/pigeon-pedigree/<pigeonID>')
-def pigeon_pedigree(pigeonID):
-    return "Zatím neimplementováno"
+@pigeon_app.route('/pigeon-pedigree-visualizastion/<pigeonID>')
+def pigeon_visualise_pedigree(pigeonID):
+    return render_template("visualize_pedigree.html")
 
 
 @pigeon_app.route('/pigeon-pedigree-download')
