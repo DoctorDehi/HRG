@@ -1,3 +1,5 @@
+from enum import Enum
+
 from flask import Blueprint, render_template, request, g, send_file, redirect, url_for
 from neo4j.exceptions import Neo4jError
 from db_conf import driver
@@ -14,56 +16,106 @@ def get_db():
     return g.neo4j_db
 
 
-def add_matka(matka_id, holub_id):
+class PigeonGender:
+    HOLUB = {
+        "marking": "1.0",
+        "assoc_relationship": "OTEC"
+    }
+    HOLUBICE = {
+        "marking": "0.1",
+        "assoc_relationship": "MATKA"
+    }
+
+def cislo_krouzku_full_from_id(pigeonID):
+    parts = pigeonID.split("-")
+    if len(parts)!=3:
+        raise WrongPigeonIdFormat(pigeonID)
+    return parts[1] + "/" + parts[2]
+
+def split_pigeon_id(pigeonID):
+    parts = pigeonID.split('-')
+    if len(parts)!=3:
+        raise WrongPigeonIdFormat(pigeonID)
+    return parts
+
+def add_parent(parent_id, pigeon_id, gender):
     db = get_db()
-    result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=matka_id)
-    data = result.data()
-    if len(data) == 1:
-        if data[0].get('pigeon').get("pohlavi") == '1.0':
-            raise WrongPigeonGenderExcetion('matky', '1.0')
+    result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=parent_id)
+    parent_data = result.data()
+    if len(parent_data) == 1:
+        if parent_data[0].get('pigeon').get("pohlavi") != gender["marking"]:
+            raise WrongPigeonGenderExcetion(gender["assoc_relationship"], parent_data[0].get('pigeon').get("pohlavi"))
+    # parent isnt in db yet
     else:
-        a = matka_id.split('-')
+        user_id, cislo_krouzku, rocnik = split_pigeon_id(parent_id)
         data = {
-            'id': matka_id,
-            'pohlavi': '0.1',
-            'cislo_krouzku': a[1],
-            'rocnik': a[2]
+            'id': parent_id,
+            'pohlavi': gender["marking"],
+            'cislo_krouzku': cislo_krouzku,
+            'rocnik': rocnik
         }
         db.run('CREATE (p:Pigeon $data )', data=data)
 
-    q = """MATCH
+
+    relationship = gender["assoc_relationship"]
+    q = f"""MATCH
             (a:Pigeon),
             (b:Pigeon)
-            WHERE a.id = $matka_id AND b.id = $holub_id
-            CREATE (a)-[r:MATKA]->(b)
+            WHERE a.id = $parent_id AND b.id = $pigeon_id
+            CREATE (a)-[r:{relationship}]->(b)
         """
-    db.run(q, matka_id=matka_id, holub_id=holub_id)
+    db.run(q, parent_id=parent_id, pigeon_id=pigeon_id)
 
-def add_otec(otec_id, holub_id):
-    db = get_db()
-    result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=otec_id)
-    data = result.data()
-    if len(data) == 1:
-        if data[0].get("pigeon").get('pohlavi') == '0.1':
-            raise WrongPigeonGenderExcetion('otce', '0.1')
-    else:
-        a = otec_id.split('-')
-        data = {
-            'id': otec_id,
-            'pohlavi': '1.0',
-            'cislo_krouzku': a[1],
-            'rocnik': a[2]
-        }
-        db.run('CREATE (p:Pigeon $data )', data=data)
-
-    q = """MATCH
-            (a:Pigeon),
-            (b:Pigeon)
-            WHERE a.id = $otec_id AND b.id = $holub_id
-            CREATE (a)-[r:OTEC]->(b)
-        """
-    db.run(q, otec_id=otec_id, holub_id=holub_id)
-
+# def add_matka(matka_id, holub_id):
+#     db = get_db()
+#     result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=matka_id)
+#     data = result.data()
+#     if len(data) == 1:
+#         if data[0].get('pigeon').get("pohlavi") == '1.0':
+#             raise WrongPigeonGenderExcetion('matky', '1.0')
+#     else:
+#         a = matka_id.split('-')
+#         data = {
+#             'id': matka_id,
+#             'pohlavi': '0.1',
+#             'cislo_krouzku': a[1],
+#             'rocnik': a[2]
+#         }
+#         db.run('CREATE (p:Pigeon $data )', data=data)
+#
+#     q = """MATCH
+#             (a:Pigeon),
+#             (b:Pigeon)
+#             WHERE a.id = $matka_id AND b.id = $holub_id
+#             CREATE (a)-[r:MATKA]->(b)
+#         """
+#     db.run(q, matka_id=matka_id, holub_id=holub_id)
+#
+# def add_otec(otec_id, holub_id):
+#     db = get_db()
+#     result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=otec_id)
+#     data = result.data()
+#     if len(data) == 1:
+#         if data[0].get("pigeon").get('pohlavi') == '0.1':
+#             raise WrongPigeonGenderExcetion('otce', '0.1')
+#     else:
+#         a = otec_id.split('-')
+#         data = {
+#             'id': otec_id,
+#             'pohlavi': '1.0',
+#             'cislo_krouzku': a[1],
+#             'rocnik': a[2]
+#         }
+#         db.run('CREATE (p:Pigeon $data )', data=data)
+#
+#     q = """MATCH
+#             (a:Pigeon),
+#             (b:Pigeon)
+#             WHERE a.id = $otec_id AND b.id = $holub_id
+#             CREATE (a)-[r:OTEC]->(b)
+#         """
+#     db.run(q, otec_id=otec_id, holub_id=holub_id)
+#
 
 def get_holub_data_from_form(form):
     data = {
@@ -128,7 +180,7 @@ def add_pigeon():
             cislo_krouzku_matka, rocnik_matka = cislo_krouzku_matka_full.split('/')
             matka_id = str(user_id) + "-" + str(cislo_krouzku_matka) + "-" + str(rocnik_matka)
             try:
-                add_matka(matka_id, holub_id)
+                add_parent(parent_id=matka_id, pigeon_id=holub_id, gender=PigeonGender.HOLUBICE)
             except WrongPigeonGenderExcetion as e:
                 error = error + e.message + " "
             except Neo4jError as e:
@@ -141,7 +193,7 @@ def add_pigeon():
             cislo_krouzku_otec, rocnik_otec = cislo_krouzku_otec_full.split('/')
             otec_id = str(user_id) + "-" + str(cislo_krouzku_otec) + "-" + str(rocnik_otec)
             try:
-                add_otec(otec_id, holub_id)
+                add_parent(parent_id=otec_id, pigeon_id=holub_id, gender=PigeonGender.HOLUB)
             except WrongPigeonGenderExcetion as e:
                 error = error + e.message + " "
             except Neo4jError as e:
@@ -205,7 +257,8 @@ def my_pigeons():
 # noinspection PyPep8Naming
 @pigeon_app.route('/pigeon-pedigree-visualizastion/<pigeonID>')
 def pigeon_visualise_pedigree(pigeonID):
-    return render_template("visualize_pedigree.html")
+    cislo_krouzku = cislo_krouzku_full_from_id(pigeonID)
+    return render_template("visualize_pedigree.html", cislo_krouzku=cislo_krouzku)
 
 
 @pigeon_app.route('/pigeon-pedigree-download')
@@ -218,7 +271,7 @@ def test():
     tmp = tempfile.TemporaryFile()
     # tmp.write(b'some content')
     # tmp.seek(0)
-    import pdf_gen_test
+    from pdf_gen import pdf_gen_test
     output = pdf_gen_test.gen_test()
     output.write_stream(tmp)
     output.write(tmp)
@@ -227,7 +280,7 @@ def test():
 
 @pigeon_app.route('/test')
 def test2():
-    add_matka('1-AT514-20', holub_id="1-TE234-13")
+    add_parent(parent_id='1-AT514-20', pigeon_id="1-TE234-13", gender=PigeonGender.HOLUBICE)
     return 'ok'
 
 

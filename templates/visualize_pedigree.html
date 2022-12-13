@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% set active_page = 'visualise_pedigree' %}
 
+{% block title %}
+     - Rodokmen {{ cislo_krouzku }}
+{% endblock %}
+
 {% block head %}
     <link rel="stylesheet" href="{{ url_for('static',filename='css/graphvis.css') }}" class="stylesheet">
 {% endblock %}

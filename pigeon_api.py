@@ -1,8 +1,8 @@
 import json
-import urllib
-
 import requests as requests
+
 from flask import Blueprint, g, request, jsonify
+
 from db_conf import driver
 
 
@@ -73,16 +73,6 @@ def delete_pigeon():
 @pigeon_api.route("/api/get-neograph-pigeon")
 def get_neograph_pigeon():
     url = 'http://localhost:7476/db/neo4j/tx/commit'
-#     data = {
-#         "statements": [
-#         {
-#             "statement": "match (p:Pigeon) return p",
-#             "parameters": {
-#                 "rocnik": 22
-#             }
-#         }
-#     ]
-#   }
     data = {
      "statements": [
                             {
@@ -91,15 +81,8 @@ def get_neograph_pigeon():
                             }
                             ]
 }
-    # data_json = json.dumps(data)
-    # payload = {'json_payload': data_json}
     r = requests.post(url, json=data)
     data = r.json()
-
-    # urllib.request.urlopen()
-    # response = urllib.request.urlopen(url)
-    # data = response.read()
-    # dict = json.loads(data)
     response = jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
