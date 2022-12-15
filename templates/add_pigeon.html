@@ -15,9 +15,9 @@
 
             <p>Povinná pole jsou označena <span aria-label="required">*</span></p>
 
-            <div class="add-pigeon-form__cislo-krouzku-full">
-                <label class="fs-6" for="cislo_krouzku2">Číslo kroužku: *
-                    <input class="add-pigeon-form__cislo-krouzku" type="text" name="cislo_krouzku" id="cislo_krouzku"
+            <div class="add-pigeon-form__cislo-krouzku">
+                <label class="fs-6" for="cislo_krouzku">Číslo kroužku: *
+                    <input class="add-pigeon-form__cislo-krouzku-input" type="text" name="cislo_krouzku" id="cislo_krouzku"
                         pattern="[A-Z]+\d+\/\d{2}" value="/" title="Zadejte číslo kroužku v žádaném formátu, například AB823/22" required>
                 </label>
                 <p class="text-warning" id="cislo_krouzku_message"></p>
@@ -83,6 +83,11 @@
             <label class="d-flex flex-column fs-6" for="povahove_vlastnosti">Povahové vlastnosti:
                 <textarea name="povahove_vlastnosti"></textarea>
             </label>
+
+            <label class="d-flex flex-column fs-6" for="poznamky">Poznámky:
+                <textarea name="poznamky"></textarea>
+            </label>
+
 
             <input class="btn btn-primary mt-4 fs-6 " type="submit" value="Potvrdit" onclick="checkForm()">
 

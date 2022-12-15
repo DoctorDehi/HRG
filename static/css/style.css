@@ -20,10 +20,9 @@ body {
     height: 64px;
     width: 64px;
     display: block;
-    /* Other styles here */
 }
 
-.add-pigeon-form__cislo-krouzku {
+.add-pigeon-form__cislo-krouzku-input {
     max-width: 70%;
 }
 

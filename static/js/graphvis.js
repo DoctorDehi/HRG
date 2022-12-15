@@ -2,10 +2,13 @@
 /**
  * Uses JQuery to post an ajax request on Neo4j REST API
  */
-function restPost() {
+function restGet() {
+    pathname_splitted = window.location.pathname.split('/')
+    pigeon_id = pathname_splitted[pathname_splitted.length-1]
     return $.ajax({
                   type: "GET",
                   url: "http://127.0.0.1:5000/api/get-neograph-pigeon",
+                  data: {'pigeonID': pigeon_id}
                   });
 }
 
@@ -14,8 +17,8 @@ function restPost() {
  */
 function displayGraph() {
 
-    // Post Cypher query to return node and relations and return results as graph.
-    restPost().done(function (data) {
+    // Get Cypher query to return node and relations and return results as graph.
+    restGet().done(function (data) {
 
                      // Parse results and convert it to vis.js compatible data.
                      var graphData = parseGraphResultData(data);

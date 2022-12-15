@@ -70,8 +70,8 @@ def delete_pigeon():
     return jsonify(pigeon)
 
 
-@pigeon_api.route("/api/get-neograph-pigeon")
-def get_neograph_pigeon():
+@pigeon_api.route("/api/get-neograph-pigeon2")
+def get_neograph_pigeon2():
     url = 'http://localhost:7476/db/neo4j/tx/commit'
     data = {
      "statements": [
@@ -87,3 +87,23 @@ def get_neograph_pigeon():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
+@pigeon_api.route("/api/get-neograph-pigeon/")
+def get_neograph_pigeon():
+    pigeon_id = request.args.get('pigeonID')
+    url = 'http://localhost:7476/db/neo4j/tx/commit'
+
+    # match path=((n:node1)-[*0..15]-(:Root{name:"XYZ"})) return n
+    # MATCH path=((p:Pigeon)-[*0..10]-(:Pigeon {{id : '{pigeon_id}'}})) return p
+    data = {
+     "statements": [
+                            {
+                            f"statement": f"MATCH path=((p:Pigeon)-[*0..10]-(:Pigeon {{id : '{pigeon_id}'}})) return p, path " ,
+                            "resultDataContents": ["graph"]
+                            }
+                            ]
+    }
+    r = requests.post(url, json=data)
+    data = r.json()
+    response = jsonify(data)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response

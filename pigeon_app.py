@@ -1,10 +1,12 @@
-from enum import Enum
-
-from flask import Blueprint, render_template, request, g, send_file, redirect, url_for
-from neo4j.exceptions import Neo4jError
-from db_conf import driver
 import tempfile
+
+from flask import Blueprint, render_template, request, g, send_file, redirect, url_for, jsonify
+from neo4j.exceptions import Neo4jError
+
+from db_conf import driver
+from neo_interface import NeoInterface
 from exceptions import *
+from utils import *
 
 pigeon_app = Blueprint('pigeon_app', __name__, template_folder='templates')
 
@@ -15,107 +17,6 @@ def get_db():
 
     return g.neo4j_db
 
-
-class PigeonGender:
-    HOLUB = {
-        "marking": "1.0",
-        "assoc_relationship": "OTEC"
-    }
-    HOLUBICE = {
-        "marking": "0.1",
-        "assoc_relationship": "MATKA"
-    }
-
-def cislo_krouzku_full_from_id(pigeonID):
-    parts = pigeonID.split("-")
-    if len(parts)!=3:
-        raise WrongPigeonIdFormat(pigeonID)
-    return parts[1] + "/" + parts[2]
-
-def split_pigeon_id(pigeonID):
-    parts = pigeonID.split('-')
-    if len(parts)!=3:
-        raise WrongPigeonIdFormat(pigeonID)
-    return parts
-
-def add_parent(parent_id, pigeon_id, gender):
-    db = get_db()
-    result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=parent_id)
-    parent_data = result.data()
-    if len(parent_data) == 1:
-        if parent_data[0].get('pigeon').get("pohlavi") != gender["marking"]:
-            raise WrongPigeonGenderExcetion(gender["assoc_relationship"], parent_data[0].get('pigeon').get("pohlavi"))
-    # parent isnt in db yet
-    else:
-        user_id, cislo_krouzku, rocnik = split_pigeon_id(parent_id)
-        data = {
-            'id': parent_id,
-            'pohlavi': gender["marking"],
-            'cislo_krouzku': cislo_krouzku,
-            'rocnik': rocnik
-        }
-        db.run('CREATE (p:Pigeon $data )', data=data)
-
-
-    relationship = gender["assoc_relationship"]
-    q = f"""MATCH
-            (a:Pigeon),
-            (b:Pigeon)
-            WHERE a.id = $parent_id AND b.id = $pigeon_id
-            CREATE (a)-[r:{relationship}]->(b)
-        """
-    db.run(q, parent_id=parent_id, pigeon_id=pigeon_id)
-
-# def add_matka(matka_id, holub_id):
-#     db = get_db()
-#     result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=matka_id)
-#     data = result.data()
-#     if len(data) == 1:
-#         if data[0].get('pigeon').get("pohlavi") == '1.0':
-#             raise WrongPigeonGenderExcetion('matky', '1.0')
-#     else:
-#         a = matka_id.split('-')
-#         data = {
-#             'id': matka_id,
-#             'pohlavi': '0.1',
-#             'cislo_krouzku': a[1],
-#             'rocnik': a[2]
-#         }
-#         db.run('CREATE (p:Pigeon $data )', data=data)
-#
-#     q = """MATCH
-#             (a:Pigeon),
-#             (b:Pigeon)
-#             WHERE a.id = $matka_id AND b.id = $holub_id
-#             CREATE (a)-[r:MATKA]->(b)
-#         """
-#     db.run(q, matka_id=matka_id, holub_id=holub_id)
-#
-# def add_otec(otec_id, holub_id):
-#     db = get_db()
-#     result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=otec_id)
-#     data = result.data()
-#     if len(data) == 1:
-#         if data[0].get("pigeon").get('pohlavi') == '0.1':
-#             raise WrongPigeonGenderExcetion('otce', '0.1')
-#     else:
-#         a = otec_id.split('-')
-#         data = {
-#             'id': otec_id,
-#             'pohlavi': '1.0',
-#             'cislo_krouzku': a[1],
-#             'rocnik': a[2]
-#         }
-#         db.run('CREATE (p:Pigeon $data )', data=data)
-#
-#     q = """MATCH
-#             (a:Pigeon),
-#             (b:Pigeon)
-#             WHERE a.id = $otec_id AND b.id = $holub_id
-#             CREATE (a)-[r:OTEC]->(b)
-#         """
-#     db.run(q, otec_id=otec_id, holub_id=holub_id)
-#
 
 def get_holub_data_from_form(form):
     data = {
@@ -147,58 +48,50 @@ def add_pigeon():
         if not cislo_krouzku_full:
             return render_template("add_pigeon.html", add_pigeon_success=False, error="Nebylo zadáno číslo kroužku! Data nebyla uložena")
 
-        cislo_krouzku, rocnik = cislo_krouzku_full.split("/")
         user_id = 1
-
-        holub_id = str(user_id) + "-" + str(cislo_krouzku) + "-" + str(rocnik)
+        pigeon_id = pigeon_id_from_cislo_krouzku_full(cislo_krouzku_full, user_id)
+        cislo_krouzku, rocnik = cislo_krouzku_full.split('/')
 
         # zkountrolovat zda holub id není v db
         db = get_db()
-        result = db.run('MATCH (a:Pigeon) WHERE a.id = $id RETURN a AS pigeon', id=holub_id)
+        existing_pigeon = NeoInterface.get_pigeon_by_id(db, pigeon_id)
         # holub je v db, neukladej
-        if len(result.data()) > 0:
+        if existing_pigeon:
             return render_template("add_pigeon.html", add_pigeon_success=False,
                                    error="Holub s tímto kroužkem již v databázi je! Data nebyla uložena.")
 
         holub_data = {
-        "id": holub_id,
+        "id": pigeon_id,
         "cislo_krouzku": cislo_krouzku,
         "rocnik": rocnik,
         }
         holub_data.update(get_holub_data_from_form(request.form))
-
         try:
             db.run("CREATE (p:Pigeon $data )", data=holub_data)
-
         except Neo4jError:
             return render_template("add_pigeon.html", add_pigeon_success=False, error="Data nebyla uložena.")
 
         error = ""
         # add matka
-        cislo_krouzku_matka_full = request.form.get("matka", "")
-        if cislo_krouzku_matka_full:
-            cislo_krouzku_matka, rocnik_matka = cislo_krouzku_matka_full.split('/')
-            matka_id = str(user_id) + "-" + str(cislo_krouzku_matka) + "-" + str(rocnik_matka)
+        if request.form.get("matka", ""):
+            mother_id = pigeon_id_from_cislo_krouzku_full(request.form.get("matka", ""), user_id)
             try:
-                add_parent(parent_id=matka_id, pigeon_id=holub_id, gender=PigeonGender.HOLUBICE)
+                NeoInterface.add_parent(db, pigeon_id=pigeon_id, parent_id=mother_id,
+                                        parent_gender=PigeonGender.HOLUBICE)
             except WrongPigeonGenderExcetion as e:
                 error = error + e.message + " "
-            except Neo4jError as e:
+            except Neo4jError:
                 error = error + "Informace o matce nebyla uložena. "
-                error = error + e.message
 
         # add otec
-        cislo_krouzku_otec_full = request.form.get("otec", "")
-        if cislo_krouzku_otec_full:
-            cislo_krouzku_otec, rocnik_otec = cislo_krouzku_otec_full.split('/')
-            otec_id = str(user_id) + "-" + str(cislo_krouzku_otec) + "-" + str(rocnik_otec)
+        if request.form.get("otec", ""):
+            father_id = pigeon_id_from_cislo_krouzku_full(request.form.get("otec", ""), user_id)
             try:
-                add_parent(parent_id=otec_id, pigeon_id=holub_id, gender=PigeonGender.HOLUB)
+                NeoInterface.add_parent(db, pigeon_id=pigeon_id, parent_id=father_id, parent_gender=PigeonGender.HOLUB)
             except WrongPigeonGenderExcetion as e:
                 error = error + e.message + " "
-            except Neo4jError as e:
+            except Neo4jError:
                 error = error + "Informace o otci nebyla uložena. "
-
 
         return  render_template("add_pigeon.html", add_pigeon_success=True, error=error)
 
@@ -206,30 +99,58 @@ def add_pigeon():
 @pigeon_app.route('/edit-pigeon/<pigeonID>', methods=['GET', 'POST'])
 def edit_pigeon(pigeonID):
     db = get_db()
-    q = "MATCH (a:Pigeon) " \
-        "WHERE a.id = $id " \
-        "RETURN a AS pigeon"
-    result = db.run(q, id=pigeonID)
-    pigeon = result.data()[0]["pigeon"]
+    old_pigeon = NeoInterface.get_pigeon_by_id(db, pigeon_id=pigeonID)
+    mother = NeoInterface.get_mother_of_pigeon(db ,pigeon_id=pigeonID)
+    father = NeoInterface.get_father_of_pigeon(db ,pigeon_id=pigeonID)
 
     if request.method == "POST":
-        holub_data = get_holub_data_from_form(request.form)
+        new_pigeon_data = get_holub_data_from_form(request.form)
         # pokud se změní pohlaví, rozvázat vztah s případnými potomky
-        if holub_data['pohlavi'] != pigeon['pohlavi']:
-            ...
-        # pokud se změní matka či otec, rozvázat vztah s původním a přidat nový
-        return "Zatím neimplementováno, změny nebyly uloženy.."
+        if new_pigeon_data['pohlavi'] != old_pigeon['pohlavi']:
+            r_label = PigeonGender.get_gender_from_marking(old_pigeon['pohlavi'])["assoc_relationship"]
+            db.run(f"MATCH (p:Pigeon {{id: '{pigeonID}' }}), (p)-[r:{r_label}]->(:Pigeon) DELETE r")
+
+        new_father_ckf = request.form.get('otec')
+        new_mother_ckf = request.form.get('matka')
+        NeoInterface.update_parent(db, 1, pigeon_id=pigeonID,
+                                   db_parent=father,
+                                   form_parent_ckf=new_father_ckf,
+                                   parent_gender=PigeonGender.HOLUB)
+        NeoInterface.update_parent(db, 1, pigeon_id=pigeonID,
+                                   db_parent=mother,
+                                   form_parent_ckf=new_mother_ckf,
+                                   parent_gender=PigeonGender.HOLUBICE)
+
+        NeoInterface.update_pigeon_data(db ,pigeon_id=pigeonID, pigeon_data=new_pigeon_data)
+
+        data = new_pigeon_data.copy()
+        data['cislo_krouzku'] = old_pigeon.get('cislo_krouzku')
+        data['rocnik'] = old_pigeon.get('rocnik')
+        data["otec"] = new_father_ckf
+        data["matka"] = new_mother_ckf
+
+
+        return render_template("edit_pigeon.html", data=data, edit_pigeon_success=True)
+
+    # method == GET
     else:
         # pridat do dat krouzky matky a otce
-        return render_template("edit_pigeon.html", data=pigeon)
+        data = old_pigeon.copy()
+        if father:
+            data["otec"] = cislo_krouzku_full_from_id(father["id"])
+        if mother:
+            data["matka"] = cislo_krouzku_full_from_id(mother["id"])
+        return render_template("edit_pigeon.html", data=data)
 
 @pigeon_app.route('/delete-pigeon/<pigeonID>', methods=['GET', 'POST'])
 def delete_pigeon(pigeonID):
     if request.method == "POST":
         # mazání z db
+        db = get_db()
+        db.run("MATCH (p:Pigeon {id: $pigeonID}) DELETE p", pigeonID=pigeonID)
         return redirect(url_for("pigeon_app.my_pigeons"))
     else:
-        krouzek = pigeonID.split('-')[1:].join('/')
+        krouzek = cislo_krouzku_full_from_id(pigeonID)
         return render_template("delete_pigeon.html", pigeon_krouzek=krouzek, pigeonID = pigeonID)
 
 
@@ -280,7 +201,6 @@ def test():
 
 @pigeon_app.route('/test')
 def test2():
-    add_parent(parent_id='1-AT514-20', pigeon_id="1-TE234-13", gender=PigeonGender.HOLUBICE)
-    return 'ok'
-
-
+    db = get_db()
+    a = NeoInterface.remove_parent(db, parent_id='1-TE254-21', pigeon_id='1-AY424-21',  parent_gender=PigeonGender.HOLUB)
+    return jsonify(a)

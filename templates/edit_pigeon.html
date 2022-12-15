@@ -3,7 +3,7 @@
 
 {% block content %}
     <div class="container mt-5 bg-light p-5 border">
-    {% if add_pigeon_success %}
+    {% if edit_pigeon_success %}
         <p class="text-success">Holub byl úspěšně uložen</p>
     {% endif %}
     {% if error %}
@@ -26,11 +26,11 @@
                 <legend class="add-pigeon-form__legend fs-6">Pohlaví: * </legend>
                 <label for="samec">
                     <input class="ms-2 form-check-input" type="radio" name="pohlavi"
-                           value="samec" required {% if data['pohlavi'] == "1.0" %}checked{% endif %}> samec
+                           value="1.0" required {% if data['pohlavi'] == "1.0" %}checked{% endif %}> samec
                 </label>
                 <label for="samice">
                     <input class="ms-2 form-check-input" type="radio" name="pohlavi"
-                           value="samice"{% if data['pohlavi'] == "0.1" %}checked{% endif %}> samice
+                           value="0.1"{% if data['pohlavi'] == "0.1" %}checked{% endif %}> samice
                 </label>
                 <p class="text-warning">Pokud změníte pohlaví holuba, dojde k rozvázání případných vztahů s potomky</p>
             </fieldset>
@@ -51,12 +51,12 @@
             <label class="d-flex flex-column fs-6" for="matka">Číslo kroužku matky:
                 <input type="text" name="matka" id="matka" pattern="[A-Z]+\d+\/\d{2}"
                        title="Zadejte číslo kroužku v žádaném formátu, například AB823/22"
-                       placeholder="{{ data['matka'] }}">
+                       value="{{ data['matka'] }}">
             </label>
             <label class="d-flex flex-column fs-6" for="otec">Číslo kroužku otce:
                 <input type="text" name="otec" id="otec" pattern="[A-Z]+\d+\/\d{2}"
                        title="Zadejte číslo kroužku v žádaném formátu, například AB823/22"
-                       placeholder="{{ data['otec'] }}">
+                       value="{{ data['otec'] }}">
             </label>
 
 
@@ -85,6 +85,11 @@
             <label class="d-flex flex-column fs-6" for="povahove_vlastnosti">Povahové vlastnosti:
                 <textarea name="povahove_vlastnosti">{{ data['povahove_vlastnosti'] }}</textarea>
             </label>
+
+            <label class="d-flex flex-column fs-6" for="poznamky">Poznámky:
+                <textarea name="poznamky">{{ data['poznamky'] }}</textarea>
+            </label>
+
 
             <input class="btn btn-primary mt-4 fs-6 " type="submit" value="Potvrdit">
             <a href="{{ url_for('pigeon_app.pigeon_detail', pigeonID=data['id']) }}">
