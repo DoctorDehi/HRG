@@ -1,12 +1,11 @@
 import tempfile
-from urllib.parse import unquote
 
 from flask import Blueprint, render_template, request, g, send_file, redirect, url_for, jsonify
 from neo4j.exceptions import Neo4jError
 
 from db_conf import driver
 from exceptions import *
-from neo_interface import NeoDb
+from neo_db import NeoDb
 from utils import pigeon_id_from_cislo_krouzku_full, cislo_krouzku_full_from_id, split_pigeon_id, PigeonGender
 from pdf_gen.pdf_generator import PedigreePDFGenerator
 
@@ -95,7 +94,7 @@ def add_pigeon():
             except Neo4jError:
                 error = error + "Informace o otci nebyla uložena. "
 
-        return  render_template("add_pigeon.html", add_pigeon_success=True, error=error)
+        return  render_template("add_pigeon.html", add_pigeon_success=True, pigeon_id=pigeon_id, ckf=cislo_krouzku, error=error)
 
 
 @pigeon_app.route('/edit-pigeon/<pigeonID>', methods=['GET', 'POST'])
@@ -154,13 +153,23 @@ def delete_pigeon(pigeonID):
         return redirect(url_for("pigeon_app.my_pigeons"))
     else:
         krouzek = cislo_krouzku_full_from_id(pigeonID)
-        return render_template("delete_pigeon.html", pigeon_krouzek=krouzek, pigeonID = pigeonID)
+        return render_template("delete_pigeon.html", pigeon_krouzek=krouzek, pigeonID=pigeonID)
 
 
 @pigeon_app.route('/pigeon-detail/<pigeonID>')
 def pigeon_detail(pigeonID):
     db= get_db()
     data = NeoDb.get_pigeon_by_id(db, pigeonID)
+    matka = NeoDb.get_mother_of_pigeon(db ,pigeonID)
+    if matka:
+        data["matka"] = cislo_krouzku_full_from_id(matka["id"])
+        data["matka_id"] = matka["id"]
+
+    otec = NeoDb.get_father_of_pigeon(db, pigeonID)
+    if otec:
+        data["otec"] = cislo_krouzku_full_from_id(otec["id"])
+        data["otec_id"] = otec["id"]
+    data["inbreeding"] = NeoDb.calculate_inbreeding(db, pigeonID) * 100
     return render_template("pigeon_detail.html", data=data)
 
 

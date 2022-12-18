@@ -5,7 +5,7 @@
 {% block content %}
     <div class="container mt-5 bg-light p-5 border">
     {% if add_pigeon_success %}
-        <p class="text-success">Holub byl úspěšně uložen</p>
+        <p class="text-success">Holub <a href="{{ url_for('pigeon_app.pigeon_detail', pigeonID=pigeon_id) }}">{{ ckf }}</a> byl úspěšně uložen</p>
     {% endif %}
     {% if error %}
         <p class="text-danger">Chyba: {{ error }}</p>
@@ -21,10 +21,6 @@
                         pattern="[A-Z]+\d+\/\d{2}" value="/" title="Zadejte číslo kroužku v žádaném formátu, například AB823/22" required>
                 </label>
                 <p class="text-warning" id="cislo_krouzku_message"></p>
-{##}
-{#                <label for="cislo_krouzku2">Číslo kroužku: </label>#}
-{#                <input class="add-pigeon-form__cislo-krouzku" type="text" name="cislo_krouzku2" required> /#}
-{#                <input class="add-pigeon-form__rocnik" type="text" name="rocnik" required>#}
             </div>
 
             <fieldset class="add-pigeon-form__pohlavi mt-2">

@@ -31,6 +31,10 @@ body {
     max-width: 100px;
 }
 
-add-pigeon-form__legend {
+.add-pigeon-form__legend {
     font-size: 1rem;
+}
+
+.pigeon-detail__pigeon-property {
+    font-size: 1.2rem;
 }

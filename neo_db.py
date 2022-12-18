@@ -87,10 +87,6 @@ class NeoDb:
                          )
 
     @staticmethod
-    def edit_pigeon_data(**kwargs):
-        ...
-
-    @staticmethod
     def update_parent(db, user_id, pigeon_id, db_parent, form_parent_ckf, parent_gender):
         if db_parent:
             # pokud se změní matka či otec, rozvázat vztah s původním a přidat nový
@@ -148,6 +144,7 @@ class NeoDb:
 
         inbreeding_coef = 0
         for item in result.data():
-            inbreeding_coef += (1/2)**item["path_length"]
+            if item["path_length"]:
+                inbreeding_coef += (1/2)**item["path_length"]
         return inbreeding_coef
 
