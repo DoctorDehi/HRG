@@ -167,8 +167,9 @@ def pigeon_detail(pigeonID):
 @pigeon_app.route("/my-pigeons")
 def my_pigeons():
     db = get_db()
-    q = "MATCH (a:Pigeon) " \
-        "RETURN a AS pigeon"
+    q = "MATCH (p:Pigeon) " \
+        "WITH p ORDER BY p.plemeno, p.barva, p.id " \
+        "RETURN p AS pigeon"
     result = db.run(q)
     data = result.data()
     return render_template("pigeon_list.html", data=data)
@@ -183,7 +184,6 @@ def pigeon_visualise_pedigree(pigeonID):
 
 @pigeon_app.route('/pigeon-pedigree-download/<pigeonID>')
 def pigeon_pedigree_download(pigeonID):
-    # asi redirect
     parts = split_pigeon_id(pigeonID)
     filename = f"Rodokmen_{parts[1]}_{parts[2]}.pdf"
     return redirect(url_for("pigeon_app.generate_pedigree", pigeonID=pigeonID, filename=filename))
@@ -196,24 +196,3 @@ def generate_pedigree(pigeonID, filename):
     paths = NeoInterface.get_ancestor_paths(db, pigeonID)
     pdf =  pdf_gen.generate_pedigree_from_paths(paths, tmp)
     return send_file(pdf, download_name=filename)
-
-
-@pigeon_app.route('/test/rodokmen.pdf')
-def test():
-    tmp = tempfile.TemporaryFile()
-    # tmp.write(b'some content')
-    # tmp.seek(0)
-    from pdf_gen import pdf_gen_test
-    output = pdf_gen_test.gen_test()
-    output.write_stream(tmp)
-    output.write(tmp)
-    tmp.seek(0)
-    return send_file(tmp, download_name="rodokmen.pdf")
-
-@pigeon_app.route('/test')
-def test2():
-    db = get_db()
-    a = NeoInterface.get_ancestor_paths(db, pigeon_id="1-TE254-21")
-    # a = NeoInterface.remove_parent(db, parent_id='1-TE254-21', pigeon_id='1-AY424-21',  parent_gender=PigeonGender.HOLUB)
-    # return jsonify(a)
-    return jsonify(a)

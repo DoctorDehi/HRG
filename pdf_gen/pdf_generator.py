@@ -114,8 +114,8 @@ class PedigreePDFGenerator:
         can.setFont(self.fontname, 10)
         can.drawString(c["cislo_krouzku"][0], c["cislo_krouzku"][1], self._get_ckf(pigoen))
         can.setFont(self.fontname, 7)
-        can.drawString(c["chovatel"][0], c["chovatel"][1], pigoen.get("chovatel"))
-        can.drawString(c["bydliste"][0], c["bydliste"][1], pigoen.get("bydliste"))
+        can.drawString(c["chovatel"][0], c["chovatel"][1], pigoen.get("chovatel", ""))
+        can.drawString(c["bydliste"][0], c["bydliste"][1], pigoen.get("bydliste", ""))
 
 
     def _generate_output(self):

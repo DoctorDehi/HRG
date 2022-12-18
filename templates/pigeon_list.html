@@ -4,15 +4,28 @@
 {% block content %}
     <div class="container mt-5 bg-light p-5 border">
         <h1>Seznam holubů</h1>
-        <ul>
-        {% for record in data %}
-            <li>
-                {{ record["pigeon"]["pohlavi"] }}
-                <a class="text-decoration-none" href="{{ url_for("pigeon_app.pigeon_detail", pigeonID=record["pigeon"]["id"]) }}">
-                    {{ record["pigeon"]["cislo_krouzku"] }}/{{ record["pigeon"]["rocnik"] }}
-                </a>
-            </li>
-        {% endfor %}
-        </ul>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                      <th scope="col">Pohlaví</th>
+                      <th scope="col">Kroužek</th>
+                      <th scope="col">Plemeno</th>
+                      <th scope="col">Barva</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in data %}
+                        <tr>
+                          <td>{{ record["pigeon"]["pohlavi"] }}</td>
+                            <td><a class="text-decoration-none" href="{{ url_for("pigeon_app.pigeon_detail", pigeonID=record["pigeon"]["id"]) }}">{{ record["pigeon"]["cislo_krouzku"] }}/{{ record["pigeon"]["rocnik"] }}</a></td>
+                          <td>{{ record["pigeon"]["plemeno"] }}</td>
+                          <td>{{ record["pigeon"]["barva"] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}
