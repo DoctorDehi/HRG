@@ -15,136 +15,136 @@
   },
 
   "OTEC": {
-    "cislo_krouzku": [511, 111],
-    "chovatel": [496, 95],
-    "bydliste": [459, 74],
+    "cislo_krouzku": [511, 111, 10, 0],
+    "chovatel": [496, 95, 7, 0],
+    "bydliste": [459, 74, 7, 0],
     "OTEC": {
-      "cislo_krouzku": [68, 358],
-      "chovatel": [83, 342],
-      "bydliste": [50, 326],
+      "cislo_krouzku": [68, 358, 10, 0],
+      "chovatel": [83, 342, 8, 0],
+      "bydliste": [50, 326, 8, 0],
       "OTEC": {
-        "cislo_krouzku": [215, -65],
-        "chovatel": [233, -83],
-        "bydliste": [200, -101],
+        "cislo_krouzku": [215, -65, 10, 90],
+        "chovatel": [233, -83, 8, 90],
+        "bydliste": [200, -101, 8, 90],
         "OTEC": {
-          "cislo_krouzku": [90, -57],
-          "chovatel": [105, -71]
+          "cislo_krouzku": [90, -57, 10, 90],
+          "chovatel": [105, -71, 8, 90]
         },
         "MATKA": {
-          "cislo_krouzku": [90, -87],
-          "chovatel": [105, -101]
+          "cislo_krouzku": [90, -87, 10, 90],
+          "chovatel": [105, -101, 8, 90]
         }
       },
       "MATKA": {
-        "cislo_krouzku": [215, -125],
-        "chovatel": [233, -143],
-        "bydliste": [200, -161],
+        "cislo_krouzku": [215, -125, 10, 90],
+        "chovatel": [233, -143, 8, 90],
+        "bydliste": [200, -161, 8, 90],
         "OTEC": {
-          "cislo_krouzku": [90, -117],
-          "chovatel": [105, -131]
+          "cislo_krouzku": [90, -117, 10, 90],
+          "chovatel": [105, -131, 8, 90]
         },
         "MATKA": {
-          "cislo_krouzku": [90, -147],
-          "chovatel": [105, -161]
+          "cislo_krouzku": [90, -147, 10, 90],
+          "chovatel": [105, -161, 8, 90]
         }
       }
     },
     "MATKA": {
-      "cislo_krouzku": [190, 358],
-      "chovatel": [205, 342],
-      "bydliste": [172, 326],
+      "cislo_krouzku": [190, 358, 10, 0],
+      "chovatel": [205, 342, 8, 0],
+      "bydliste": [172, 326, 8, 0],
       "OTEC": {
-        "cislo_krouzku": [215, -184],
-        "chovatel": [233, -202],
-        "bydliste": [200, -220],
+        "cislo_krouzku": [215, -184, 10, 90],
+        "chovatel": [233, -202, 8, 90],
+        "bydliste": [200, -220, 8, 90],
         "OTEC": {
-          "cislo_krouzku": [90, -176],
-          "chovatel": [105, -191]
+          "cislo_krouzku": [90, -176, 10, 90],
+          "chovatel": [105, -191, 8, 90]
         },
         "MATKA": {
-          "cislo_krouzku": [90, -206],
-          "chovatel": [105, -220]
+          "cislo_krouzku": [90, -206, 10, 90],
+          "chovatel": [105, -22, 8, 900]
         }
       },
       "MATKA": {
-        "cislo_krouzku": [215, -244],
-        "chovatel": [233, -262],
-        "bydliste": [200, -280],
+        "cislo_krouzku": [215, -244, 10, 90],
+        "chovatel": [233, -262, 8, 90],
+        "bydliste": [200, -280, 8, 90],
         "OTEC": {
-          "cislo_krouzku": [90, -236],
-          "chovatel": [105, -250]
+          "cislo_krouzku": [90, -236, 10, 90],
+          "chovatel": [105, -250, 8, 90]
         },
         "MATKA": {
-          "cislo_krouzku": [90, -266],
-          "chovatel": [105, -280]
+          "cislo_krouzku": [90, -266, 10, 90],
+          "chovatel": [105, -280, 8, 90]
         }
       }
     }
   },
 
   "MATKA": {
-    "cislo_krouzku": [393, 111],
-    "chovatel": [378, 95],
-    "bydliste": [340, 74],
+    "cislo_krouzku": [393, 111, 10, 0],
+    "chovatel": [378, 95, 7, 0],
+    "bydliste": [340, 74, 7, 0],
     "OTEC": {
-      "cislo_krouzku": [357, 358],
-      "chovatel": [372, 342],
-      "bydliste": [339, 326],
+      "cislo_krouzku": [357, 358, 10, 0],
+      "chovatel": [372, 342, 8, 0],
+      "bydliste": [339, 326, 8, 0],
       "OTEC": {
-        "cislo_krouzku": [215, -354],
-        "chovatel": [233, -372],
-        "bydliste": [200, -390],
+        "cislo_krouzku": [215, -354, 10, 90],
+        "chovatel": [233, -372, 8, 90],
+        "bydliste": [200, -390, 8, 90],
         "OTEC": {
-          "cislo_krouzku": [90, -346],
-          "chovatel": [105, -360]
+          "cislo_krouzku": [90, -346, 10, 90],
+          "chovatel": [105, -360, 8, 90]
         },
         "MATKA": {
-          "cislo_krouzku": [90, -376],
-          "chovatel": [105, -390]
+          "cislo_krouzku": [90, -376, 10, 90],
+          "chovatel": [105, -390, 8, 90]
         }
       },
       "MATKA": {
-        "cislo_krouzku": [215, -414],
-        "chovatel": [233, -432],
-        "bydliste": [200, -450],
+        "cislo_krouzku": [215, -414, 10, 90],
+        "chovatel": [233, -432, 8, 90],
+        "bydliste": [200, -45, 8, 900],
         "OTEC": {
-          "cislo_krouzku": [90, -406],
-          "chovatel": [105, -420]
+          "cislo_krouzku": [90, -406, 10, 90],
+          "chovatel": [105, -420, 8, 90]
         },
         "MATKA": {
-          "cislo_krouzku": [90, -435],
-          "chovatel": [105, -450]
+          "cislo_krouzku": [90, -435, 10, 90],
+          "chovatel": [105, -450, 8, 90]
         }
       }
     },
     "MATKA": {
-      "cislo_krouzku": [479, 358],
-      "chovatel": [494, 342],
-      "bydliste": [461, 326],
+      "cislo_krouzku": [479, 358, 10, 0],
+      "chovatel": [494, 342, 8, 0],
+      "bydliste": [461, 326, 8, 0],
       "OTEC":{
-        "cislo_krouzku": [215, -473],
-        "chovatel": [233, -491],
-        "bydliste": [200, -509],
+        "cislo_krouzku": [215, -473, 10, 90],
+        "chovatel": [233, -491, 8, 90],
+        "bydliste": [200, -509, 8, 90],
         "OTEC": {
-          "cislo_krouzku": [90, -465],
-          "chovatel": [105, -480]
+          "cislo_krouzku": [90, -465, 10, 90],
+          "chovatel": [105, -480, 8, 90]
         },
         "MATKA": {
-          "cislo_krouzku": [90, -495],
-          "chovatel": [105, -510]
+          "cislo_krouzku": [90, -495, 10, 90],
+          "chovatel": [105, -510, 8, 90]
         }
       },
       "MATKA": {
-        "cislo_krouzku": [215, -533],
-        "chovatel": [233, -551],
-        "bydliste": [200, -569],
+        "cislo_krouzku": [215, -533, 10, 90],
+        "chovatel": [233, -551, 8, 90],
+        "bydliste": [200, -569, 8, 90],
         "OTEC": {
-          "cislo_krouzku": [90, -525],
-          "chovatel": [105, -539]
+          "cislo_krouzku": [90, -525, 10, 90],
+          "chovatel": [105, -539, 8, 90]
         },
         "MATKA": {
-          "cislo_krouzku": [90, -555],
-          "chovatel": [105, -569]
+          "cislo_krouzku": [90, -555, 10, 90],
+          "chovatel": [105, -569, 8, 90]
         }
       }
     }

@@ -93,7 +93,8 @@ function parseGraphResultData(data) {
 
 function convertNodes(nodes) {
     var convertedNodes = [];
-
+    pathname_splitted = window.location.pathname.split('/')
+    pigeon_id = pathname_splitted[pathname_splitted.length-1]
     nodes.forEach(function (node) {
                   var nodeLabel = 'Pigeon'
                   var displayedLabel = node.properties['cislo_krouzku'] + '/' + node.properties['rocnik'];
@@ -102,11 +103,17 @@ function convertNodes(nodes) {
                   } else {
                       color = '#97C2FC'
                   }
+                  if(node.properties['id'] == pigeon_id) {
+                      borderWidth = 5
+                  } else {
+                      borderWidth = 1
+                  }
                   convertedNodes.push({
                                       id: node.id,
                                       label: displayedLabel,
                                       group: nodeLabel,
-                                      color: color
+                                      color: color,
+                                      borderWidth: borderWidth
                                       })
                   });
 

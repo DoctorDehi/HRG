@@ -1,7 +1,7 @@
 from typing import Dict
 
 from exceptions import WrongPigeonGenderExcetion
-from utils import *
+from utils import cislo_krouzku_full_from_id, pigeon_id_from_cislo_krouzku_full, split_pigeon_id
 
 
 class NeoInterface:
@@ -129,7 +129,6 @@ class NeoInterface:
 
     @staticmethod
     def get_ancestor_paths(db, pigeon_id):
-        print(pigeon_id)
         q = f"""
             MATCH path=((:Pigeon {{id : '{pigeon_id}'}})<-[r*0..4]-(p:Pigeon)) return path
         """

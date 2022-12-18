@@ -126,6 +126,7 @@ def edit_pigeon(pigeonID):
         NeoInterface.update_pigeon_data(db ,pigeon_id=pigeonID, pigeon_data=new_pigeon_data)
 
         data = new_pigeon_data.copy()
+        data['id'] = old_pigeon.get('id')
         data['cislo_krouzku'] = old_pigeon.get('cislo_krouzku')
         data['rocnik'] = old_pigeon.get('rocnik')
         data["otec"] = new_father_ckf
@@ -159,11 +160,7 @@ def delete_pigeon(pigeonID):
 @pigeon_app.route('/pigeon-detail/<pigeonID>')
 def pigeon_detail(pigeonID):
     db= get_db()
-    q = "MATCH (a:Pigeon) "\
-        "WHERE a.id = $id "\
-        "RETURN a AS pigeon"
-    result = db.run(q, id=pigeonID)
-    data = result.data()[0]["pigeon"]
+    data = NeoInterface.get_pigeon_by_id(db, pigeonID)
     return render_template("pigeon_detail.html", data=data)
 
 
@@ -188,19 +185,17 @@ def pigeon_visualise_pedigree(pigeonID):
 def pigeon_pedigree_download(pigeonID):
     # asi redirect
     parts = split_pigeon_id(pigeonID)
-    filename = f"Rodokmen_{parts[1]}%2F{parts[2]}.pdf"
+    filename = f"Rodokmen_{parts[1]}_{parts[2]}.pdf"
     return redirect(url_for("pigeon_app.generate_pedigree", pigeonID=pigeonID, filename=filename))
 
 @pigeon_app.route("/pigeon-pedigree-download/<pigeonID>/<filename>")
 def generate_pedigree(pigeonID, filename):
-    filename = unquote(filename)
     pdf_gen = PedigreePDFGenerator()
     tmp = tempfile.TemporaryFile()
     db = get_db()
     paths = NeoInterface.get_ancestor_paths(db, pigeonID)
     pdf =  pdf_gen.generate_pedigree_from_paths(paths, tmp)
     return send_file(pdf, download_name=filename)
-    # return f"Test: {pigeonID, filename}"
 
 
 @pigeon_app.route('/test/rodokmen.pdf')

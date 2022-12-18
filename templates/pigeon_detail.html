@@ -9,7 +9,7 @@
             <p>{{ i }}: {{ data[i] }}</p>
         {% endfor %}
         <div class="d-flex flex-md-row flex-wrap">
-            <a href="{{ url_for('pigeon_app.pigeon_pedigree_download', pigeonID=data['id']) }}">
+            <a href="{{ url_for('pigeon_app.pigeon_pedigree_download', pigeonID=data['id']) }}" target="_blank">
                 <button class="btn btn-primary m-2">Generovat rodokmen</button>
             </a>
             <a href="{{ url_for('pigeon_app.pigeon_visualise_pedigree', pigeonID=data['id']) }}" target="_blank">

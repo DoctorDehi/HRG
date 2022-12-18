@@ -146,6 +146,7 @@ def gen_test():
     can.drawString(461, 326, "Libochovany 45, 41103")
 
     can.rotate(90)
+    can.setFont("Calibri", 10)
     can.drawString(215, -65, "R453/16")
     can.drawString(215, -125, "R453/16")
     can.drawString(215, -184, "R453/16")
@@ -178,6 +179,7 @@ def gen_test():
     can.drawString(200, -509, "Litoměřice 245, 41103")
     can.drawString(200, -569, "Litoměřice 245, 41103")
 
+    can.setFont("Calibri",10)
     can.drawString(90, -57, "U5831/13")
     can.drawString(90, -87, "U5432/13")
     can.drawString(90, -117, "U5433/13")
@@ -186,6 +188,7 @@ def gen_test():
     can.drawString(90, -206, "U5436/13")
     can.drawString(90, -236, "U5437/13")
     can.drawString(90, -266, "U5438/13")
+
     can.setFont("Calibri", 8)
     can.drawString(105, -71, "Denisa Krebsová")
     can.drawString(105, -101, "Denisa Krebsová")
