@@ -2,8 +2,6 @@ TODO:
 - přidat redis cachování
 - přidat mongo pro uživatele
 - implementovat login system https://flask-login.readthedocs.io/en/latest/
-- počítání inbreedingu
-- upravování holuba
 
 Vytahování holubů uživatele:
 - z mongo db vytáhnout ID uživatele

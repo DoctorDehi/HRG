@@ -6,7 +6,7 @@ from neo4j.exceptions import Neo4jError
 
 from db_conf import driver
 from exceptions import *
-from neo_interface import NeoInterface
+from neo_interface import NeoDb
 from utils import pigeon_id_from_cislo_krouzku_full, cislo_krouzku_full_from_id, split_pigeon_id, PigeonGender
 from pdf_gen.pdf_generator import PedigreePDFGenerator
 
@@ -56,7 +56,7 @@ def add_pigeon():
 
         # zkountrolovat zda holub id není v db
         db = get_db()
-        existing_pigeon = NeoInterface.get_pigeon_by_id(db, pigeon_id)
+        existing_pigeon = NeoDb.get_pigeon_by_id(db, pigeon_id)
         # holub je v db, neukladej
         if existing_pigeon:
             return render_template("add_pigeon.html", add_pigeon_success=False,
@@ -78,8 +78,8 @@ def add_pigeon():
         if request.form.get("matka", ""):
             mother_id = pigeon_id_from_cislo_krouzku_full(request.form.get("matka", ""), user_id)
             try:
-                NeoInterface.add_parent(db, pigeon_id=pigeon_id, parent_id=mother_id,
-                                        parent_gender=PigeonGender.HOLUBICE)
+                NeoDb.add_parent(db, pigeon_id=pigeon_id, parent_id=mother_id,
+                                 parent_gender=PigeonGender.HOLUBICE)
             except WrongPigeonGenderExcetion as e:
                 error = error + e.message + " "
             except Neo4jError:
@@ -89,7 +89,7 @@ def add_pigeon():
         if request.form.get("otec", ""):
             father_id = pigeon_id_from_cislo_krouzku_full(request.form.get("otec", ""), user_id)
             try:
-                NeoInterface.add_parent(db, pigeon_id=pigeon_id, parent_id=father_id, parent_gender=PigeonGender.HOLUB)
+                NeoDb.add_parent(db, pigeon_id=pigeon_id, parent_id=father_id, parent_gender=PigeonGender.HOLUB)
             except WrongPigeonGenderExcetion as e:
                 error = error + e.message + " "
             except Neo4jError:
@@ -101,9 +101,9 @@ def add_pigeon():
 @pigeon_app.route('/edit-pigeon/<pigeonID>', methods=['GET', 'POST'])
 def edit_pigeon(pigeonID):
     db = get_db()
-    old_pigeon = NeoInterface.get_pigeon_by_id(db, pigeon_id=pigeonID)
-    mother = NeoInterface.get_mother_of_pigeon(db ,pigeon_id=pigeonID)
-    father = NeoInterface.get_father_of_pigeon(db ,pigeon_id=pigeonID)
+    old_pigeon = NeoDb.get_pigeon_by_id(db, pigeon_id=pigeonID)
+    mother = NeoDb.get_mother_of_pigeon(db, pigeon_id=pigeonID)
+    father = NeoDb.get_father_of_pigeon(db, pigeon_id=pigeonID)
 
     if request.method == "POST":
         new_pigeon_data = get_holub_data_from_form(request.form)
@@ -114,16 +114,16 @@ def edit_pigeon(pigeonID):
 
         new_father_ckf = request.form.get('otec')
         new_mother_ckf = request.form.get('matka')
-        NeoInterface.update_parent(db, 1, pigeon_id=pigeonID,
-                                   db_parent=father,
-                                   form_parent_ckf=new_father_ckf,
-                                   parent_gender=PigeonGender.HOLUB)
-        NeoInterface.update_parent(db, 1, pigeon_id=pigeonID,
-                                   db_parent=mother,
-                                   form_parent_ckf=new_mother_ckf,
-                                   parent_gender=PigeonGender.HOLUBICE)
+        NeoDb.update_parent(db, 1, pigeon_id=pigeonID,
+                            db_parent=father,
+                            form_parent_ckf=new_father_ckf,
+                            parent_gender=PigeonGender.HOLUB)
+        NeoDb.update_parent(db, 1, pigeon_id=pigeonID,
+                            db_parent=mother,
+                            form_parent_ckf=new_mother_ckf,
+                            parent_gender=PigeonGender.HOLUBICE)
 
-        NeoInterface.update_pigeon_data(db ,pigeon_id=pigeonID, pigeon_data=new_pigeon_data)
+        NeoDb.update_pigeon_data(db, pigeon_id=pigeonID, pigeon_data=new_pigeon_data)
 
         data = new_pigeon_data.copy()
         data['id'] = old_pigeon.get('id')
@@ -160,7 +160,7 @@ def delete_pigeon(pigeonID):
 @pigeon_app.route('/pigeon-detail/<pigeonID>')
 def pigeon_detail(pigeonID):
     db= get_db()
-    data = NeoInterface.get_pigeon_by_id(db, pigeonID)
+    data = NeoDb.get_pigeon_by_id(db, pigeonID)
     return render_template("pigeon_detail.html", data=data)
 
 
@@ -193,6 +193,10 @@ def generate_pedigree(pigeonID, filename):
     pdf_gen = PedigreePDFGenerator()
     tmp = tempfile.TemporaryFile()
     db = get_db()
-    paths = NeoInterface.get_ancestor_paths(db, pigeonID)
+    paths = NeoDb.get_ancestor_paths(db, pigeonID)
     pdf =  pdf_gen.generate_pedigree_from_paths(paths, tmp)
     return send_file(pdf, download_name=filename)
+
+@pigeon_app.route("/test/<pigeonID>")
+def test(pigeonID):
+    return jsonify(NeoDb.calculate_inbreeding(get_db(), pigeonID))

@@ -65,7 +65,7 @@ class PedigreePDFGenerator:
 
     def _wpd_write_string_bbk(self, can, pigeon, key):
         c = self.coords["data"]
-        can.drawString(c[key][0], c[key][1], pigeon[key])
+        can.drawString(c[key][0], c[key][1], pigeon.get(key, ""))
 
 
     def _write_ancestors_data(self, paths):

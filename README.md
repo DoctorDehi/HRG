@@ -5,7 +5,7 @@
 - možnost úpravy atributů holubů
 - generování rodokmenů
 - výpočet inbreedingu
-- zobrazování rodinného stromu
+- zobrazování příbuzných holubů
 
 
 In development

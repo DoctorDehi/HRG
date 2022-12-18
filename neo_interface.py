@@ -4,7 +4,7 @@ from exceptions import WrongPigeonGenderExcetion
 from utils import cislo_krouzku_full_from_id, pigeon_id_from_cislo_krouzku_full, split_pigeon_id
 
 
-class NeoInterface:
+class NeoDb:
 
     @staticmethod
     def get_pigeon_by_id(db, pigeon_id) -> Dict[str, any]:
@@ -75,16 +75,16 @@ class NeoInterface:
 
     @staticmethod
     def replace_parent(db, pigeon_id, old_parent_id, new_parent_id, parent_gender):
-        NeoInterface.remove_parent(db,
-                                   pigeon_id=pigeon_id,
-                                   parent_id=old_parent_id,
-                                   parent_gender=parent_gender
-                                   )
-        NeoInterface.add_parent(db,
-                                pigeon_id=pigeon_id,
-                                parent_id=new_parent_id,
-                                parent_gender=parent_gender
-                                )
+        NeoDb.remove_parent(db,
+                            pigeon_id=pigeon_id,
+                            parent_id=old_parent_id,
+                            parent_gender=parent_gender
+                            )
+        NeoDb.add_parent(db,
+                         pigeon_id=pigeon_id,
+                         parent_id=new_parent_id,
+                         parent_gender=parent_gender
+                         )
 
     @staticmethod
     def edit_pigeon_data(**kwargs):
@@ -98,25 +98,25 @@ class NeoInterface:
                 if form_parent_ckf:
                     # replace father
                     new_parent_id = pigeon_id_from_cislo_krouzku_full(form_parent_ckf, user_id)
-                    NeoInterface.replace_parent(db,
-                                                pigeon_id=pigeon_id,
-                                                old_parent_id=db_parent.get('id'),
-                                                new_parent_id=new_parent_id,
-                                                parent_gender=parent_gender)
+                    NeoDb.replace_parent(db,
+                                         pigeon_id=pigeon_id,
+                                         old_parent_id=db_parent.get('id'),
+                                         new_parent_id=new_parent_id,
+                                         parent_gender=parent_gender)
                 else:
                     # remove
-                    NeoInterface.remove_parent(db,
-                                               pigeon_id=pigeon_id,
-                                               parent_id=db_parent.get('id'),
-                                               parent_gender=parent_gender)
+                    NeoDb.remove_parent(db,
+                                        pigeon_id=pigeon_id,
+                                        parent_id=db_parent.get('id'),
+                                        parent_gender=parent_gender)
         else:
             if form_parent_ckf:
                 # add father
                 new_parent_id = pigeon_id_from_cislo_krouzku_full(form_parent_ckf, user_id)
-                NeoInterface.add_parent(db,
-                                        pigeon_id=pigeon_id,
-                                        parent_id=new_parent_id,
-                                        parent_gender=parent_gender)
+                NeoDb.add_parent(db,
+                                 pigeon_id=pigeon_id,
+                                 parent_id=new_parent_id,
+                                 parent_gender=parent_gender)
 
     @staticmethod
     def update_pigeon_data(db, pigeon_id, pigeon_data):
@@ -135,4 +135,19 @@ class NeoInterface:
         result = db.run(q)
         data = result.data()
         return data
+
+    @staticmethod
+    def calculate_inbreeding(db, pigeonID):
+        q = """
+            MATCH (a:Pigeon {id : $id}) MATCH (b:Pigeon  {id : $id})
+            OPTIONAL MATCH (a)<-[p1*..10]-(common_ancestor: Pigeon)-[p2*..10]->(b)
+            WITH size(p1) + size(p2) AS path_length
+            RETURN DISTINCT path_length
+        """
+        result =db.run(q, id=pigeonID)
+
+        inbreeding_coef = 0
+        for item in result.data():
+            inbreeding_coef += (1/2)**item["path_length"]
+        return inbreeding_coef
 
