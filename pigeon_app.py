@@ -1,9 +1,10 @@
+import json
 import tempfile
 
 from flask import Blueprint, render_template, request, g, send_file, redirect, url_for, jsonify
 from neo4j.exceptions import Neo4jError
 
-from db_conf import driver
+from db_conf import neo_driver, r
 from exceptions import *
 from neo_db import NeoDb
 from utils import pigeon_id_from_cislo_krouzku_full, cislo_krouzku_full_from_id, split_pigeon_id, PigeonGender
@@ -14,7 +15,7 @@ pigeon_app = Blueprint('pigeon_app', __name__, template_folder='templates')
 
 def get_db():
     if 'db' not in g:
-        g.neo4j_db = driver.session()
+        g.neo4j_db = neo_driver.session()
 
     return g.neo4j_db
 
@@ -105,6 +106,7 @@ def edit_pigeon(pigeonID):
     father = NeoDb.get_father_of_pigeon(db, pigeon_id=pigeonID)
 
     if request.method == "POST":
+        r.delete(f"detail-{pigeonID}")
         new_pigeon_data = get_holub_data_from_form(request.form)
         # pokud se změní pohlaví, rozvázat vztah s případnými potomky
         if new_pigeon_data['pohlavi'] != old_pigeon['pohlavi']:
@@ -158,18 +160,23 @@ def delete_pigeon(pigeonID):
 
 @pigeon_app.route('/pigeon-detail/<pigeonID>')
 def pigeon_detail(pigeonID):
-    db= get_db()
-    data = NeoDb.get_pigeon_by_id(db, pigeonID)
-    matka = NeoDb.get_mother_of_pigeon(db ,pigeonID)
-    if matka:
-        data["matka"] = cislo_krouzku_full_from_id(matka["id"])
-        data["matka_id"] = matka["id"]
+    redis_data = r.get(f"detail-{pigeonID}")
+    if redis_data:
+        data = json.loads(redis_data)
+    else:
+        db = get_db()
+        data = NeoDb.get_pigeon_by_id(db, pigeonID)
+        matka = NeoDb.get_mother_of_pigeon(db ,pigeonID)
+        if matka:
+            data["matka"] = cislo_krouzku_full_from_id(matka["id"])
+            data["matka_id"] = matka["id"]
 
-    otec = NeoDb.get_father_of_pigeon(db, pigeonID)
-    if otec:
-        data["otec"] = cislo_krouzku_full_from_id(otec["id"])
-        data["otec_id"] = otec["id"]
-    data["inbreeding"] = NeoDb.calculate_inbreeding(db, pigeonID) * 100
+        otec = NeoDb.get_father_of_pigeon(db, pigeonID)
+        if otec:
+            data["otec"] = cislo_krouzku_full_from_id(otec["id"])
+            data["otec_id"] = otec["id"]
+        data["inbreeding"] = NeoDb.calculate_inbreeding(db, pigeonID) * 100
+        r.set(f"detail-{pigeonID}", json.dumps(data), 60)
     return render_template("pigeon_detail.html", data=data)
 
 

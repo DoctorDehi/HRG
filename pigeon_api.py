@@ -3,7 +3,8 @@ import requests as requests
 
 from flask import Blueprint, g, request, jsonify
 
-from db_conf import driver
+from db_conf import neo_driver
+from db_conf import r as redis
 
 
 pigeon_api = Blueprint('app', __name__)
@@ -11,7 +12,7 @@ pigeon_api = Blueprint('app', __name__)
 
 def get_db():
     if 'db' not in g:
-        g.neo4j_db = driver.session()
+        g.neo4j_db = neo_driver.session()
 
     return g.neo4j_db
 
@@ -70,17 +71,17 @@ def delete_pigeon():
     return jsonify(pigeon)
 
 
-@pigeon_api.route("/api/get-neograph-pigeon2")
+@pigeon_api.route("/api/get-neograph-pigeon-all")
 def get_neograph_pigeon2():
     url = 'http://localhost:7476/db/neo4j/tx/commit'
     data = {
      "statements": [
-                            {
-                            "statement": "match (n),()-[r]-() return n,r limit 50" ,
-                            "resultDataContents": ["graph"]
-                            }
-                            ]
-}
+                        {
+                        "statement": "MATCH (n),()-[r]-() RETURN n,r LIMIT 50" ,
+                        "resultDataContents": ["graph"]
+                        }
+                    ]
+    }
     r = requests.post(url, json=data)
     data = r.json()
     response = jsonify(data)
@@ -90,20 +91,30 @@ def get_neograph_pigeon2():
 @pigeon_api.route("/api/get-neograph-pigeon/")
 def get_neograph_pigeon():
     pigeon_id = request.args.get('pigeonID')
+    only_ancestors = request.args.get('only_ancestors', False)
     url = 'http://localhost:7476/db/neo4j/tx/commit'
+    if only_ancestors == "true":
+        r_key = f"visualize-pedigree-{pigeon_id}"
+        statement = f"MATCH path=((p:Pigeon)-[*0..10]->(:Pigeon {{id : '{pigeon_id}'}})) return p, path"
+    else:
+        r_key = f"visualize-ancestors-{pigeon_id}"
+        statement = f"MATCH path=((p:Pigeon)-[*0..10]-(:Pigeon {{id : '{pigeon_id}'}})) return p, path"
 
-    # match path=((n:node1)-[*0..15]-(:Root{name:"XYZ"})) return n
-    # MATCH path=((p:Pigeon)-[*0..10]-(:Pigeon {{id : '{pigeon_id}'}})) return p
-    data = {
-     "statements": [
-                            {
-                            f"statement": f"MATCH path=((p:Pigeon)-[*0..10]-(:Pigeon {{id : '{pigeon_id}'}})) return p, path " ,
-                            "resultDataContents": ["graph"]
-                            }
-                            ]
-    }
-    r = requests.post(url, json=data)
-    data = r.json()
+    redis_data = redis.get(r_key)
+    if redis_data:
+        data = json.loads(redis_data)
+    else:
+        data = {
+         "statements": [
+                                {
+                                f"statement": statement,
+                                "resultDataContents": ["graph"]
+                                }
+                                ]
+        }
+        r = requests.post(url, json=data)
+        data = r.json()
+        redis.set(r_key, json.dumps(data), 60)
     response = jsonify(data)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response

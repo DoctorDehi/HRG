@@ -10,10 +10,12 @@
 {% endblock %}
 
 {% block content %}
-    <div class="d-flex bg-light p-5 border">
-    <div id="wrapper">
-        <div id="vis" class="w-100 h-100"></div>
-
+    <div class="d-flex p-3 bg-light">
+        <p>Zobrazit pouze předky <input id="only-ancestors-toggle" type="checkbox" onclick="displayGraph()"></p>
+    </div>
+    <div class="d-flex text-info bg-light p-1 border">
+        <div id="wrapper">
+            <div id="vis" class="w-100 h-100"></div>
         </div>
 </div>
 {% endblock %}

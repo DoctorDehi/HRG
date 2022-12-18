@@ -5,10 +5,15 @@
 function restGet() {
     pathname_splitted = window.location.pathname.split('/')
     pigeon_id = pathname_splitted[pathname_splitted.length-1]
+    if (document.getElementById('only-ancestors-toggle').checked) {
+        only_ancestors = true
+    } else {
+        only_ancestors = false
+    }
     return $.ajax({
                   type: "GET",
                   url: "http://127.0.0.1:5000/api/get-neograph-pigeon",
-                  data: {'pigeonID': pigeon_id}
+                  data: {'pigeonID': pigeon_id, 'only_ancestors': only_ancestors}
                   });
 }
 
