@@ -19,6 +19,11 @@ services:
     volumes:
       - 'mongodb:/data'
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6381:6379"
+
 volumes:
   'pigeondb':
   'mongodb':

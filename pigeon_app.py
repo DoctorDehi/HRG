@@ -1,12 +1,14 @@
 import tempfile
+from urllib.parse import unquote
 
 from flask import Blueprint, render_template, request, g, send_file, redirect, url_for, jsonify
 from neo4j.exceptions import Neo4jError
 
 from db_conf import driver
-from neo_interface import NeoInterface
 from exceptions import *
-from utils import *
+from neo_interface import NeoInterface
+from utils import pigeon_id_from_cislo_krouzku_full, cislo_krouzku_full_from_id, split_pigeon_id, PigeonGender
+from pdf_gen.pdf_generator import PedigreePDFGenerator
 
 pigeon_app = Blueprint('pigeon_app', __name__, template_folder='templates')
 
@@ -182,10 +184,24 @@ def pigeon_visualise_pedigree(pigeonID):
     return render_template("visualize_pedigree.html", cislo_krouzku=cislo_krouzku)
 
 
-@pigeon_app.route('/pigeon-pedigree-download')
-def pigeon_pedigree_download():
+@pigeon_app.route('/pigeon-pedigree-download/<pigeonID>')
+def pigeon_pedigree_download(pigeonID):
     # asi redirect
-    return "Zatím neimplementováno"
+    parts = split_pigeon_id(pigeonID)
+    filename = f"Rodokmen_{parts[1]}%2F{parts[2]}.pdf"
+    return redirect(url_for("pigeon_app.generate_pedigree", pigeonID=pigeonID, filename=filename))
+
+@pigeon_app.route("/pigeon-pedigree-download/<pigeonID>/<filename>")
+def generate_pedigree(pigeonID, filename):
+    filename = unquote(filename)
+    pdf_gen = PedigreePDFGenerator()
+    tmp = tempfile.TemporaryFile()
+    db = get_db()
+    paths = NeoInterface.get_ancestor_paths(db, pigeonID)
+    pdf =  pdf_gen.generate_pedigree_from_paths(paths, tmp)
+    return send_file(pdf, download_name=filename)
+    # return f"Test: {pigeonID, filename}"
+
 
 @pigeon_app.route('/test/rodokmen.pdf')
 def test():
@@ -202,5 +218,7 @@ def test():
 @pigeon_app.route('/test')
 def test2():
     db = get_db()
-    a = NeoInterface.remove_parent(db, parent_id='1-TE254-21', pigeon_id='1-AY424-21',  parent_gender=PigeonGender.HOLUB)
+    a = NeoInterface.get_ancestor_paths(db, pigeon_id="1-TE254-21")
+    # a = NeoInterface.remove_parent(db, parent_id='1-TE254-21', pigeon_id='1-AY424-21',  parent_gender=PigeonGender.HOLUB)
+    # return jsonify(a)
     return jsonify(a)

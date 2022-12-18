@@ -3,6 +3,7 @@ from pigeon_api import pigeon_api
 from login_app import login_app
 from flask import Flask, g
 from db_conf import mongo_engine
+import os
 
 
 app = Flask(__name__)
@@ -14,6 +15,12 @@ def teardown_db(exception):
 
     if neo4j_db is not None:
         neo4j_db.close()
+
+
+app.config.update(
+    TESTING=True,
+    SECRET_KEY=os.environ.get("SECRET_KEY")
+)
 
 app.register_blueprint(pigeon_app)
 app.register_blueprint(pigeon_api)

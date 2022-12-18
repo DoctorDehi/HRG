@@ -126,3 +126,14 @@ class NeoInterface:
         for key, val in pigeon_data.items():
             q = q + f"SET p.{key} = '{val}'"
         db.run(q)
+
+    @staticmethod
+    def get_ancestor_paths(db, pigeon_id):
+        print(pigeon_id)
+        q = f"""
+            MATCH path=((:Pigeon {{id : '{pigeon_id}'}})<-[r*0..4]-(p:Pigeon)) return path
+        """
+        result = db.run(q)
+        data = result.data()
+        return data
+

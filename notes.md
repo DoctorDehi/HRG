@@ -12,3 +12,12 @@ Vytahování holubů uživatele:
 
 Vizualizace rodokmenu:
 - https://github.com/neo4j-contrib/neovis.js
+
+
+
+### Hladání předků:
+    MATCH path=((p:Pigeon)-[r*0..4]->(:Pigeon {id : '1-TE254-21'})) return path
+    
+    MATCH path=((:Pigeon {id : '1-TE254-21'})<-[r*0..4]-(p:Pigeon)) return path
+
+    MATCH path=((:Pigeon {id : '1-TE254-21'})<-[r*0..4]-(p:Pigeon)) return p, r
