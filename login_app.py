@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, g, send_file, redirect, url_for
 from db_conf import  neo_driver, mongo_engine, User
 from flask_login import LoginManager, login_required, login_user, logout_user
-#from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 login_app = Blueprint('login_app', __name__, template_folder='templates/login')
@@ -36,9 +36,10 @@ def login():
 
         # find corresponding user
         user_trying_to_log_in = User.objects(email=email).first()
+        password_hash = user_trying_to_log_in.get_password_hash()
 
         # check credentials
-        if user_trying_to_log_in is not None and user_trying_to_log_in.is_active:
+        if user_trying_to_log_in is not None and user_trying_to_log_in.is_active and check_password_hash(pwhash=password_hash, password=password):
             login_user(user_trying_to_log_in)
             return redirect('/')
         else:
@@ -52,8 +53,29 @@ def logout():
     logout_user()
     redirect('/login')
 
-@login_app.route('/register')
+@login_app.route('/register', methods=['GET', 'POST'])
 def register():
-    return "Zatím neimplementováno"
-    new_user = User(email="", password="")
-    user.save()
+    if request.method == 'POST':
+
+        email = request.form["email"]
+        
+        user_uniqueness_check = User.objects(email=email).first()
+        if user_uniqueness_check:
+            return render_template('registration_page.html', login_error="Uživatel s touto emailovou adresou je již zaregistrovaný")
+        
+        password = request.form["password"]
+        password_again = request.form["password_again"]
+
+        if password == password_again:
+
+            password_hash = generate_password_hash(password=password, method="pbkdf2:sha512")
+            new_user = User(email=email, password=password_hash)
+            new_user.save()
+            return redirect('/login')
+
+        else:
+            return render_template('registration_page.html', login_error="Zadaná hesla se neshodují")
+
+    else:
+        return render_template('registration_page.html')
+

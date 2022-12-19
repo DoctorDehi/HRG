@@ -22,3 +22,6 @@ class User(mongo_engine.Document):
 
     def get_email(self):
         return self.email
+
+    def get_password_hash(self):
+        return self.password
