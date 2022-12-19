@@ -8,8 +8,8 @@ import os
 # app definition
 app = Flask(__name__)
 
-container_id = 'cf558ed5c392'
-app.config['MONGODB_HOST'] = f'mongodb://{container_id}:27017/credentials'
+container_id = 'localhost' # 'cf558ed5c392'
+app.config['MONGODB_HOST'] = f'mongodb://{container_id}:27019/credentials'
 mongo_engine.init_app(app)
 app.login_manager = login_manager
 
