@@ -19,10 +19,12 @@ def teardown_db(exception):
 
 app.config.update(
     TESTING=True,
-    SECRET_KEY=os.environ.get("SECRET_KEY")
+    SECRET_KEY=os.environ.get("SECRET_KEY"),
 )
 
 app.register_blueprint(pigeon_app)
 app.register_blueprint(pigeon_api)
 app.register_blueprint(login_app)
-app.run(debug=True)
+
+if __name__ == "__main__":
+    app.run(debug=True)

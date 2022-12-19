@@ -107,6 +107,9 @@ def edit_pigeon(pigeonID):
 
     if request.method == "POST":
         r.delete(f"detail-{pigeonID}")
+        r.delete(f"visualize-pedigree-{pigeonID}")
+        r.delete(f"visualize-ancestors-{pigeonID}")
+
         new_pigeon_data = get_holub_data_from_form(request.form)
         # pokud se změní pohlaví, rozvázat vztah s případnými potomky
         if new_pigeon_data['pohlavi'] != old_pigeon['pohlavi']:
