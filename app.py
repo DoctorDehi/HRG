@@ -1,13 +1,17 @@
 from pigeon_app import pigeon_app
 from pigeon_api import pigeon_api
-from login_app import login_app
-from flask import Flask, g
+from login_app import login_app, login_manager
+from flask import Flask, g, Blueprint
 from db_conf import mongo_engine
 import os
 
-
+# app definition
 app = Flask(__name__)
+
+container_id = 'cf558ed5c392'
+app.config['MONGODB_HOST'] = f'mongodb://{container_id}:27017/credentials'
 mongo_engine.init_app(app)
+app.login_manager = login_manager
 
 @app.teardown_appcontext
 def teardown_db(exception):
