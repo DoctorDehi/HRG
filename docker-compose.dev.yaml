@@ -1,0 +1,42 @@
+version: "2.0"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: python3 -m flask run --host=0.0.0.0
+    ports:
+      - '5000:5000'
+    env_file:
+      - '.env'
+    network_mode: "host"
+    volumes:
+      - '.:/usr/src/app/'
+
+  neo4j:
+      image: neo4j:latest
+      env_file:
+        - '.env'
+      ports:
+        - '7476:7474'
+        - '7689:7687'
+      volumes:
+        - 'pigeondb:/data'
+
+  mongodb:
+    image: mongo:latest
+    env_file:
+      - '.env'
+    ports:
+      - "27019:27017"
+    volumes:
+      - 'mongodb:/data'
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6381:6379"
+
+volumes:
+  'pigeondb':
+  'mongodb':

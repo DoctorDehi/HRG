@@ -2,6 +2,7 @@ import json
 import tempfile
 
 from flask import Blueprint, render_template, request, g, send_file, redirect, url_for, jsonify
+from flask_login import LoginManager, login_required
 from neo4j.exceptions import Neo4jError
 
 from db_conf import neo_driver, r
@@ -42,6 +43,7 @@ def index():
 
 
 @pigeon_app.route('/add-pigeon', methods=['GET', 'POST'])
+@login_required
 def add_pigeon():
     if request.method == "GET":
         return render_template("add_pigeon.html")
@@ -99,6 +101,7 @@ def add_pigeon():
 
 
 @pigeon_app.route('/edit-pigeon/<pigeonID>', methods=['GET', 'POST'])
+@login_required
 def edit_pigeon(pigeonID):
     db = get_db()
     old_pigeon = NeoDb.get_pigeon_by_id(db, pigeon_id=pigeonID)
@@ -150,6 +153,7 @@ def edit_pigeon(pigeonID):
         return render_template("edit_pigeon.html", data=data)
 
 @pigeon_app.route('/delete-pigeon/<pigeonID>', methods=['GET', 'POST'])
+@login_required
 def delete_pigeon(pigeonID):
     if request.method == "POST":
         # mazání z db

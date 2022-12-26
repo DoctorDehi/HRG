@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, g, send_file, redirect, url_for
+from flask import Blueprint, render_template, request, g, redirect, jsonify
 from db_conf import  neo_driver, mongo_engine, User
 from flask_login import LoginManager, login_required, login_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -36,10 +36,14 @@ def login():
 
         # find corresponding user
         user_trying_to_log_in = User.objects(email=email).first()
+
+        if user_trying_to_log_in is None:
+            return render_template('login_page.html', login_error="Uživatel s touto emailovou adresou není registrován")
+
         password_hash = user_trying_to_log_in.get_password_hash()
 
         # check credentials
-        if user_trying_to_log_in is not None and user_trying_to_log_in.is_active and check_password_hash(pwhash=password_hash, password=password):
+        if user_trying_to_log_in.is_active and check_password_hash(pwhash=password_hash, password=password):
             login_user(user_trying_to_log_in)
             return redirect('/')
         else:
@@ -71,7 +75,8 @@ def register():
             password_hash = generate_password_hash(password=password, method="pbkdf2:sha512")
             new_user = User(email=email, password=password_hash)
             new_user.save()
-            return redirect('/login')
+            login_user(new_user)
+            return redirect('/my-pigeons')
 
         else:
             return render_template('registration_page.html', login_error="Zadaná hesla se neshodují")
@@ -79,3 +84,6 @@ def register():
     else:
         return render_template('registration_page.html')
 
+@login_app.route("/ltest")
+def test():
+    return jsonify(User.objects.all())
