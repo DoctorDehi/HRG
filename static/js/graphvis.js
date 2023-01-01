@@ -2,40 +2,45 @@
 /**
  * Uses JQuery to post an ajax request on Neo4j REST API
  */
-function restGet() {
+async function restGet() {
+  try {
     pathname_splitted = window.location.pathname.split('/')
-    pigeon_id = pathname_splitted[pathname_splitted.length-1]
+    pigeon_id = pathname_splitted[pathname_splitted.length - 1]
     if (document.getElementById('only-ancestors-toggle').checked) {
-        only_ancestors = true
+      only_ancestors = true
     } else {
-        only_ancestors = false
+      only_ancestors = false
     }
-    return $.ajax({
-                  type: "GET",
-                  url: "http://127.0.0.1:5000/api/get-neograph-pigeon",
-                  data: {'pigeonID': pigeon_id, 'only_ancestors': only_ancestors}
-                  });
+    const searchParams = new URLSearchParams();
+    searchParams.set('pigeonID', pigeon_id);
+    searchParams.set('only_ancestors', only_ancestors);
+    const response = await fetch(`http://127.0.0.1:5000/api/get-neograph-pigeon?${searchParams}`, {
+      method: 'GET',
+    })
+    return response.json()
+  } catch (error) {
+    console.error(error)
+  }
 }
+
 
 /**
  * Function to call to display a new graph.
  */
-function displayGraph() {
-
-    // Get Cypher query to return node and relations and return results as graph.
-    restGet().done(function (data) {
-
-                     // Parse results and convert it to vis.js compatible data.
-                     var graphData = parseGraphResultData(data);
-                     var nodes = convertNodes(graphData.nodes);
-                     var edges = convertEdges(graphData.edges);
-                     var visData = {
-                     nodes: nodes,
-                     edges: edges
-                     };
-
-                     displayVisJsData(visData);
-                     });
+async function displayGraph() {
+  try {
+    const data = await restGet()
+    var graphData = parseGraphResultData(data)
+    var nodes = convertNodes(graphData.nodes)
+    var edges = convertEdges(graphData.edges)
+    var visData = {
+      nodes: nodes,
+      edges: edges,
+    }
+    displayVisJsData(visData)
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 function displayVisJsData(data) {
