@@ -90,7 +90,7 @@ def add_pigeon():
             try:
                 NeoDb.add_parent(db, pigeon_id=pigeon_id, parent_id=mother_id,
                                  parent_gender=PigeonGender.HOLUBICE)
-            except WrongPigeonGenderExcetion as e:
+            except WrongPigeonGenderException as e:
                 flash(e.message, "error")
             except Neo4jError:
                 flash("Informace o matce nebyla uložena. ", "error")
@@ -100,7 +100,7 @@ def add_pigeon():
             father_id = pigeon_id_from_cislo_krouzku_full(request.form.get("otec", ""), user_id)
             try:
                 NeoDb.add_parent(db, pigeon_id=pigeon_id, parent_id=father_id, parent_gender=PigeonGender.HOLUB)
-            except WrongPigeonGenderExcetion as e:
+            except WrongPigeonGenderException as e:
                 flash(e.message, "error")
             except Neo4jError:
                 flash("Informace o otci nebyla uložena. ", "error")
@@ -136,7 +136,7 @@ def edit_pigeon(pigeonID):
                                 db_parent=father,
                                 form_parent_ckf=new_father_ckf,
                                 parent_gender=PigeonGender.HOLUB)
-        except WrongPigeonGenderExcetion as e:
+        except WrongPigeonGenderException as e:
             flash(e.message, "error")
         except Neo4jError:
             flash("Informace o otci nebyla uložena. ", "error")
@@ -146,7 +146,7 @@ def edit_pigeon(pigeonID):
                                 db_parent=mother,
                                 form_parent_ckf=new_mother_ckf,
                                 parent_gender=PigeonGender.HOLUBICE)
-        except WrongPigeonGenderExcetion as e:
+        except WrongPigeonGenderException as e:
             flash(e.message, "error")
         except Neo4jError:
             flash("Informace o matce nebyla uložena. ", "error")
@@ -223,6 +223,7 @@ def my_pigeons():
 
 # noinspection PyPep8Naming
 @pigeon_app.route('/pigeon-pedigree-visualizastion/<pigeonID>')
+@login_required
 def pigeon_visualise_pedigree(pigeonID):
     if not check_ownership(pigeonID):
         return redirect(url_for("pigeon_app.my_pigeons"))

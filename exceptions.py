@@ -4,7 +4,7 @@ class PigeonAppException(Exception):
         super().__init__()
 
 
-class WrongPigeonGenderExcetion(PigeonAppException):
+class WrongPigeonGenderException(PigeonAppException):
     def __init__(self, role, gender):
         self.message = f"Pohlaví {role} nemůže být {gender}"
         super().__init__()

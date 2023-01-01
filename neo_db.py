@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from exceptions import WrongPigeonGenderExcetion
+from exceptions import WrongPigeonGenderException
 from utils import cislo_krouzku_full_from_id, pigeon_id_from_cislo_krouzku_full, split_pigeon_id
 
 
@@ -55,7 +55,7 @@ class NeoDb:
         parent_data = result.data()
         if len(parent_data) == 1:
             if parent_data[0].get('pigeon').get("pohlavi") != parent_gender["marking"]:
-                raise WrongPigeonGenderExcetion(parent_gender["assoc_relationship"], parent_data[0].get('pigeon').get("pohlavi"))
+                raise WrongPigeonGenderException(parent_gender["assoc_relationship"], parent_data[0].get('pigeon').get("pohlavi"))
         # parent isnt in db yet
         else:
             user_id, cislo_krouzku, rocnik = split_pigeon_id(parent_id)
