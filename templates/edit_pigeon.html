@@ -6,12 +6,18 @@
     {% if edit_pigeon_success %}
         <p class="text-success">Holub byl úspěšně uložen</p>
     {% endif %}
-    {% if error %}
-        <p class="text-danger">Chyba: {{ error }}</p>
-    {% endif %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+            <ul>
+                {%- for msg in errors %}
+                    <li class="text-danger">{{ msg }}</li>
+                {% endfor -%}
+            </ul>
+        {% endif %}
+        {% endwith %}
         <h1>Upravit holuba</h1>
         <form class="mt-3" method="post">
-
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <p>Povinná pole jsou označena <span aria-label="required">*</span></p>
 
             <div class="add-pigeon-form__cislo-krouzku-full">
@@ -30,7 +36,7 @@
                 </label>
                 <label for="samice">
                     <input class="ms-2 form-check-input" type="radio" name="pohlavi"
-                           value="0.1"{% if data['pohlavi'] == "0.1" %}checked{% endif %}> samice
+                           value="0.1" {% if data['pohlavi'] == "0.1" %}checked{% endif %}> samice
                 </label>
                 <p class="text-warning">Pokud změníte pohlaví holuba, dojde k rozvázání případných vztahů s potomky</p>
             </fieldset>

@@ -1,4 +1,5 @@
 from exceptions import  *
+import re
 
 
 class PigeonGender:
@@ -24,6 +25,12 @@ def cislo_krouzku_full_from_id(pigeonID):
         raise WrongPigeonIdFormat(pigeonID)
     return parts[1] + "/" + parts[2]
 
+def user_id_from_pigoen_id(pigeonID):
+    parts = pigeonID.split('-')
+    if len(parts) != 3:
+        raise WrongPigeonIdFormat(pigeonID)
+    return int(parts[0])
+
 def split_pigeon_id(pigeonID):
     parts = pigeonID.split('-')
     if len(parts)!=3:
@@ -35,3 +42,8 @@ def pigeon_id_from_cislo_krouzku_full(cislo_krouzku_full, user_id):
     if len(parts) != 2:
         raise WrongPigeonIdFormat(cislo_krouzku_full)
     return f'{user_id}-{parts[0]}-{parts[1]}'
+
+def check_pigeon_id_validity(pigeonID):
+    pat = re.compile(r"\d+\-[A-Z]+\d+\-\d{2}")
+    return re.fullmatch(pat, pigeonID)
+

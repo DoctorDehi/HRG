@@ -1,15 +1,16 @@
 import json
 import tempfile
 
-from flask import Blueprint, render_template, request, g, send_file, redirect, url_for, jsonify
-from flask_login import LoginManager, login_required
+from flask import Blueprint, render_template, request, g, send_file, redirect, url_for, flash
+from flask_login import login_required, current_user
 from neo4j.exceptions import Neo4jError
 
 from db_conf import neo_driver, r
 from exceptions import *
 from neo_db import NeoDb
-from utils import pigeon_id_from_cislo_krouzku_full, cislo_krouzku_full_from_id, split_pigeon_id, PigeonGender
 from pdf_gen.pdf_generator import PedigreePDFGenerator
+from utils import pigeon_id_from_cislo_krouzku_full, cislo_krouzku_full_from_id, split_pigeon_id, \
+    check_pigeon_id_validity, user_id_from_pigoen_id, PigeonGender
 
 pigeon_app = Blueprint('pigeon_app', __name__, template_folder='templates')
 
@@ -19,6 +20,13 @@ def get_db():
         g.neo4j_db = neo_driver.session()
 
     return g.neo4j_db
+
+def check_ownership(pigeonID):
+    if check_pigeon_id_validity(pigeonID):
+        if current_user.id == user_id_from_pigoen_id(pigeonID):
+            return True
+
+    return False
 
 
 def get_holub_data_from_form(form):
@@ -52,7 +60,7 @@ def add_pigeon():
         if not cislo_krouzku_full:
             return render_template("add_pigeon.html", add_pigeon_success=False, error="Nebylo zadáno číslo kroužku! Data nebyla uložena")
 
-        user_id = 1
+        user_id = current_user.id
         pigeon_id = pigeon_id_from_cislo_krouzku_full(cislo_krouzku_full, user_id)
         cislo_krouzku, rocnik = cislo_krouzku_full.split('/')
 
@@ -68,6 +76,7 @@ def add_pigeon():
         "id": pigeon_id,
         "cislo_krouzku": cislo_krouzku,
         "rocnik": rocnik,
+        "user_id": user_id
         }
         holub_data.update(get_holub_data_from_form(request.form))
         try:
@@ -75,7 +84,6 @@ def add_pigeon():
         except Neo4jError:
             return render_template("add_pigeon.html", add_pigeon_success=False, error="Data nebyla uložena.")
 
-        error = ""
         # add matka
         if request.form.get("matka", ""):
             mother_id = pigeon_id_from_cislo_krouzku_full(request.form.get("matka", ""), user_id)
@@ -83,9 +91,9 @@ def add_pigeon():
                 NeoDb.add_parent(db, pigeon_id=pigeon_id, parent_id=mother_id,
                                  parent_gender=PigeonGender.HOLUBICE)
             except WrongPigeonGenderExcetion as e:
-                error = error + e.message + " "
+                flash(e.message, "error")
             except Neo4jError:
-                error = error + "Informace o matce nebyla uložena. "
+                flash("Informace o matce nebyla uložena. ", "error")
 
         # add otec
         if request.form.get("otec", ""):
@@ -93,16 +101,18 @@ def add_pigeon():
             try:
                 NeoDb.add_parent(db, pigeon_id=pigeon_id, parent_id=father_id, parent_gender=PigeonGender.HOLUB)
             except WrongPigeonGenderExcetion as e:
-                error = error + e.message + " "
+                flash(e.message, "error")
             except Neo4jError:
-                error = error + "Informace o otci nebyla uložena. "
+                flash("Informace o otci nebyla uložena. ", "error")
 
-        return  render_template("add_pigeon.html", add_pigeon_success=True, pigeon_id=pigeon_id, ckf=cislo_krouzku, error=error)
+        return  render_template("add_pigeon.html", add_pigeon_success=True, pigeon_id=pigeon_id, ckf=cislo_krouzku)
 
 
 @pigeon_app.route('/edit-pigeon/<pigeonID>', methods=['GET', 'POST'])
 @login_required
 def edit_pigeon(pigeonID):
+    if not check_ownership(pigeonID):
+        return redirect(url_for("pigeon_app.my_pigeons"))
     db = get_db()
     old_pigeon = NeoDb.get_pigeon_by_id(db, pigeon_id=pigeonID)
     mother = NeoDb.get_mother_of_pigeon(db, pigeon_id=pigeonID)
@@ -121,14 +131,25 @@ def edit_pigeon(pigeonID):
 
         new_father_ckf = request.form.get('otec')
         new_mother_ckf = request.form.get('matka')
-        NeoDb.update_parent(db, 1, pigeon_id=pigeonID,
-                            db_parent=father,
-                            form_parent_ckf=new_father_ckf,
-                            parent_gender=PigeonGender.HOLUB)
-        NeoDb.update_parent(db, 1, pigeon_id=pigeonID,
-                            db_parent=mother,
-                            form_parent_ckf=new_mother_ckf,
-                            parent_gender=PigeonGender.HOLUBICE)
+        try:
+            NeoDb.update_parent(db, 1, pigeon_id=pigeonID,
+                                db_parent=father,
+                                form_parent_ckf=new_father_ckf,
+                                parent_gender=PigeonGender.HOLUB)
+        except WrongPigeonGenderExcetion as e:
+            flash(e.message, "error")
+        except Neo4jError:
+            flash("Informace o otci nebyla uložena. ", "error")
+
+        try:
+            NeoDb.update_parent(db, 1, pigeon_id=pigeonID,
+                                db_parent=mother,
+                                form_parent_ckf=new_mother_ckf,
+                                parent_gender=PigeonGender.HOLUBICE)
+        except WrongPigeonGenderExcetion as e:
+            flash(e.message, "error")
+        except Neo4jError:
+            flash("Informace o matce nebyla uložena. ", "error")
 
         NeoDb.update_pigeon_data(db, pigeon_id=pigeonID, pigeon_data=new_pigeon_data)
 
@@ -155,6 +176,8 @@ def edit_pigeon(pigeonID):
 @pigeon_app.route('/delete-pigeon/<pigeonID>', methods=['GET', 'POST'])
 @login_required
 def delete_pigeon(pigeonID):
+    if not check_ownership(pigeonID):
+        return redirect(url_for("pigeon_app.my_pigeons"))
     if request.method == "POST":
         # mazání z db
         db = get_db()
@@ -166,7 +189,10 @@ def delete_pigeon(pigeonID):
 
 
 @pigeon_app.route('/pigeon-detail/<pigeonID>')
+@login_required
 def pigeon_detail(pigeonID):
+    if not check_ownership(pigeonID):
+        return redirect(url_for("pigeon_app.my_pigeons"))
     redis_data = r.get(f"detail-{pigeonID}")
     if redis_data:
         data = json.loads(redis_data)
@@ -188,19 +214,18 @@ def pigeon_detail(pigeonID):
 
 
 @pigeon_app.route("/my-pigeons")
+@login_required
 def my_pigeons():
     db = get_db()
-    q = "MATCH (p:Pigeon) " \
-        "WITH p ORDER BY p.plemeno, p.barva, p.id " \
-        "RETURN p AS pigeon"
-    result = db.run(q)
-    data = result.data()
+    data = NeoDb.get_pigeons_by_user(db, user_id=current_user.id)
     return render_template("pigeon_list.html", data=data)
 
 
 # noinspection PyPep8Naming
 @pigeon_app.route('/pigeon-pedigree-visualizastion/<pigeonID>')
 def pigeon_visualise_pedigree(pigeonID):
+    if not check_ownership(pigeonID):
+        return redirect(url_for("pigeon_app.my_pigeons"))
     cislo_krouzku = cislo_krouzku_full_from_id(pigeonID)
     return render_template("visualize_pedigree.html", cislo_krouzku=cislo_krouzku)
 
@@ -219,7 +244,3 @@ def generate_pedigree(pigeonID, filename):
     paths = NeoDb.get_ancestor_paths(db, pigeonID)
     pdf =  pdf_gen.generate_pedigree_from_paths(paths, tmp)
     return send_file(pdf, download_name=filename)
-
-@pigeon_app.route("/test/<pigeonID>")
-def test(pigeonID):
-    return jsonify(NeoDb.calculate_inbreeding(get_db(), pigeonID))

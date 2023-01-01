@@ -7,12 +7,18 @@
     {% if add_pigeon_success %}
         <p class="text-success">Holub <a href="{{ url_for('pigeon_app.pigeon_detail', pigeonID=pigeon_id) }}">{{ ckf }}</a> byl úspěšně uložen</p>
     {% endif %}
-    {% if error %}
-        <p class="text-danger">Chyba: {{ error }}</p>
-    {% endif %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+            <ul>
+                {%- for msg in errors %}
+                    <li class="text-danger">{{ msg }}</li>
+                {% endfor -%}
+            </ul>
+        {% endif %}
+        {% endwith %}
         <h1>Přidat holuba</h1>
         <form class="mt-3" method="post">
-
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <p>Povinná pole jsou označena <span aria-label="required">*</span></p>
 
             <div class="add-pigeon-form__cislo-krouzku">

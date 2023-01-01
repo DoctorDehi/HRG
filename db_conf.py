@@ -9,22 +9,24 @@ neo_driver = GraphDatabase.driver("bolt://127.0.0.1:7689", auth=basic_auth("neo4
 r = redis.Redis(host='localhost', port=6381, db=0)
 mongo_engine = MongoEngine()
 
-class User(mongo_engine.Document, UserMixin):
+class User(mongo_engine.Document):
     id = SequenceField(primary_key=True)
     email = StringField(required=True, unique=True)
     password = StringField(required=True)
-    # is_active = BooleanField(default=True)
-    # is_authenticated = BooleanField(default=False)
+    is_active = BooleanField(default=True)
 
-    # @property
-    # def is_authenticated(self):
-    #     return self.is_active
-    #
-    # def get_id(self):
-    #     return self.id
-    #
-    # def get_email(self):
-    #     return self.email
-    #
+    @property
+    def is_authenticated(self):
+        return self.is_active
+
+    def get_id(self):
+        return self.id
+
+    def get_email(self):
+        return self.email
+
     def get_password_hash(self):
         return self.password
+
+    def __str__(self):
+        return f"User:{self.email}"

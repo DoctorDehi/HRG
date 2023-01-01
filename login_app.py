@@ -23,7 +23,7 @@ def get_mongo_db():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.objects(email=user_id).first()
+    return User.objects(id=user_id).first()
 
 
 @login_app.route('/login', methods=['GET', 'POST'])
@@ -52,10 +52,10 @@ def login():
         return render_template('login_page.html')
 
 @login_app.route('/logout')
-@login_required
+# @login_required
 def logout():
     logout_user()
-    redirect('/login')
+    return redirect('/login')
 
 @login_app.route('/register', methods=['GET', 'POST'])
 def register():

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from exceptions import WrongPigeonGenderExcetion
 from utils import cislo_krouzku_full_from_id, pigeon_id_from_cislo_krouzku_full, split_pigeon_id
@@ -15,6 +15,18 @@ class NeoDb:
         data = db.run(q, id=pigeon_id).data()
         if data:
             return data[0]['pigeon']
+
+
+    @staticmethod
+    def get_pigeons_by_user(db, user_id) -> List:
+        q = """
+        MATCH (p:Pigeon)
+        WHERE p.user_id = $user_id
+        WITH p ORDER BY p.plemeno, p.barva, p.id
+        RETURN p AS pigeon
+        """
+        data = db.run(q, user_id=user_id).data()
+        return data
 
 
     @staticmethod
