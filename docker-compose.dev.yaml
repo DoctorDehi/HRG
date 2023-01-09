@@ -30,7 +30,7 @@ services:
     ports:
       - "27019:27017"
     volumes:
-      - 'mongodb:/data'
+      - 'mongodb:/data/db'
 
   redis:
     image: redis:latest
